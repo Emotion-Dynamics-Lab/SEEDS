@@ -31,11 +31,11 @@ library(reshape2)
 
 Read in the data:
 ```{r}
-#Enya's Mac:
-df <- read.csv("/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+#Hayleigh's Mac:
+# df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/Demographics_SONA_numeric.csv", na.strings=c("","NA"))
 
 # Jess's Mac
-#df <- read.csv("/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+# df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/Demographics_SONA_numeric.csv", na.strings=c("","NA"))
 ```
 
 Subset the data to just the items from the Demographics Questionnaire and remove rows that have question headers:
