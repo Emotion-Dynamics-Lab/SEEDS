@@ -49,19 +49,19 @@ head(demo_scale)
 
 Rename the items:
 ```{r}
-colnames(df_scale)[colnames(df_scale)=="X.5"] <- "id"
-colnames(df_scale)[colnames(df_scale)=="Question.4.1"] <- "GenderAgender"
-colnames(df_scale)[colnames(df_scale)=="Question.4.2"] <- "GenderCisgenderMan"
-colnames(df_scale)[colnames(df_scale)=="Question.4.3"] <- "GenderCisgenderWoman"
-colnames(df_scale)[colnames(df_scale)=="Question.4.4"] <- "GenderGenderfluid"
-colnames(df_scale)[colnames(df_scale)=="Question.4.5"] <- "GenderGenderqueer"
-colnames(df_scale)[colnames(df_scale)=="Question.4.6"] <- "GenderNonBinary"
-colnames(df_scale)[colnames(df_scale)=="Question.4.7"] <- "GenderTransWoman"
-colnames(df_scale)[colnames(df_scale)=="Question.4.8"] <- "GenderTransMan"
-colnames(df_scale)[colnames(df_scale)=="Question.4.9"] <- "GenderTwoSpirit"
-colnames(df_scale)[colnames(df_scale)=="Question.4.10"] <- "GenderPreferNotToAnswer"
-colnames(df_scale)[colnames(df_scale)=="Question.4.11"] <- "GenderSelfDescribeTF"
-colnames(df_scale)[colnames(df_scale)=="Question.4.12"] <- "GenderSelfDescribeText"
+colnames(demo_scale)[colnames(demo_scale)=="X.7"] <- "id"
+colnames(demo_scale)[colnames(demo_scale)=="X.13"] <- "Gender"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.2"] <- "GenderCisgenderMan"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.3"] <- "GenderCisgenderWoman"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.4"] <- "GenderGenderfluid"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.5"] <- "GenderGenderqueer"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.6"] <- "GenderNonBinary"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.7"] <- "GenderTransWoman"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.8"] <- "GenderTransMan"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.9"] <- "GenderTwoSpirit"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.10"] <- "GenderPreferNotToAnswer"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.11"] <- "GenderSelfDescribeTF"
+colnames(demo_scale)[colnames(demo_scale)=="Question.4.12"] <- "GenderSelfDescribeText"
 
 colnames(df_scale)[colnames(df_scale)=="Question.5.1"] <- "SexualityAsexualAceSpectrum"
 colnames(df_scale)[colnames(df_scale)=="Question.5.2"] <- "SexualityBisexual"
@@ -94,17 +94,17 @@ colnames(df_scale)[colnames(df_scale)=="X..Q...Q8.ChoiceTextEntryValue.."] <- "P
 
 colnames(df_scale)[colnames(df_scale)=="X..Q...Q9.ChoiceTextEntryValue.."] <- "Ladder"
 
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q10.ChoiceTextEntryValue.."] <- "Feedback"
+colnames(demo_scale)[colnames(demo_scale)=="X.42"] <- "Feedback"
 
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q11.ChoiceTextEntryValue.."] <- "InternationalDomesticStudent"
+colnames(demo_scale)[colnames(demo_scale)=="X.43"] <- "InternationalDomesticStudent"
 
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q12.ChoiceTextEntryValue.."] <- "UndergradYear"
+colnames(demo_scale)[colnames(demo_scale)=="X.44"] <- "UndergradYear"
 
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q13.ChoiceTextEntryValue.."] <- "PartOrFullTime"
+colnames(demo_scale)[colnames(demo_scale)=="X.45"] <- "PartOrFullTime"
 
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q14.ChoiceTextEntryValue.."] <- "Faculty"
+colnames(demo_scale)[colnames(demo_scale)=="X.46"] <- "Faculty"
 
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q15.ChoiceTextEntryValue.."] <- "GPA"
+colnames(demo_scale)[colnames(demo_scale)=="X.47"] <- "GPA"
 
 ```
 
