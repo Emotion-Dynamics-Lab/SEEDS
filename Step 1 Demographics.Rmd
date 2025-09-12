@@ -1,0 +1,286 @@
+---
+title: "Step 1 Demographics"
+author: "Enya Duffield"
+date: "14/11/2022"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+This script will process the data from the Part 1 - Demographics Questionnaire.
+
+## Preliminary Steps
+
+Load packages:
+
+```{r, warning = FALSE, message = FALSE, include = FALSE}
+library(plyr)
+library(dplyr)
+library(tidyverse)
+library(tibble)
+library(Hmisc)
+library(psych)
+library(ggplot2)
+library(ggcorrplot)
+library(reshape2)
+
+```
+
+Read in the data:
+```{r}
+#Enya's Mac:
+df <- read.csv("/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+# Jess's Mac
+#df <- read.csv("/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+```
+
+Subset the data to just the items from the Demographics Questionnaire and remove rows that have question headers:
+```{r}
+df_scale <- subset(df, select = c(X.5, Question.4.1:X..Q...Q15.ChoiceTextEntryValue..))
+df_scale <- df_scale[-c(1,2,3),]
+head(df_scale)
+```
+
+## Clean up the variables
+
+Rename the items:
+```{r}
+colnames(df_scale)[colnames(df_scale)=="X.5"] <- "id"
+colnames(df_scale)[colnames(df_scale)=="Question.4.1"] <- "GenderAgender"
+colnames(df_scale)[colnames(df_scale)=="Question.4.2"] <- "GenderCisgenderMan"
+colnames(df_scale)[colnames(df_scale)=="Question.4.3"] <- "GenderCisgenderWoman"
+colnames(df_scale)[colnames(df_scale)=="Question.4.4"] <- "GenderGenderfluid"
+colnames(df_scale)[colnames(df_scale)=="Question.4.5"] <- "GenderGenderqueer"
+colnames(df_scale)[colnames(df_scale)=="Question.4.6"] <- "GenderNonBinary"
+colnames(df_scale)[colnames(df_scale)=="Question.4.7"] <- "GenderTransWoman"
+colnames(df_scale)[colnames(df_scale)=="Question.4.8"] <- "GenderTransMan"
+colnames(df_scale)[colnames(df_scale)=="Question.4.9"] <- "GenderTwoSpirit"
+colnames(df_scale)[colnames(df_scale)=="Question.4.10"] <- "GenderPreferNotToAnswer"
+colnames(df_scale)[colnames(df_scale)=="Question.4.11"] <- "GenderSelfDescribeTF"
+colnames(df_scale)[colnames(df_scale)=="Question.4.12"] <- "GenderSelfDescribeText"
+
+colnames(df_scale)[colnames(df_scale)=="Question.5.1"] <- "SexualityAsexualAceSpectrum"
+colnames(df_scale)[colnames(df_scale)=="Question.5.2"] <- "SexualityBisexual"
+colnames(df_scale)[colnames(df_scale)=="Question.5.3"] <- "SexualityGay"
+colnames(df_scale)[colnames(df_scale)=="Question.5.4"] <- "SexualityLesbian"
+colnames(df_scale)[colnames(df_scale)=="Question.5.5"] <- "SexualityPansexual"
+colnames(df_scale)[colnames(df_scale)=="Question.5.6"] <- "SexualityQueer"
+colnames(df_scale)[colnames(df_scale)=="Question.5.7"] <- "SexualityStraightHeterosexual"
+colnames(df_scale)[colnames(df_scale)=="Question.5.8"] <- "SexualityPreferNotToAnswer"
+colnames(df_scale)[colnames(df_scale)=="Question.5.9"] <- "SexualitySelfDescribeTF"
+colnames(df_scale)[colnames(df_scale)=="Question.5.10"] <- "SexualitySelfDescribeText"
+
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q6.ChoiceTextEntryValue.."] <- "Age"
+
+colnames(df_scale)[colnames(df_scale)=="Question.7.1"] <- "EthnicityWhiteEuropean"
+colnames(df_scale)[colnames(df_scale)=="Question.7.2"] <- "EthnicityBlackAfricanCaribbean"
+colnames(df_scale)[colnames(df_scale)=="Question.7.3"] <- "EthnicityHispanicLatino"
+colnames(df_scale)[colnames(df_scale)=="Question.7.4"] <- "EthnicityAsian"
+colnames(df_scale)[colnames(df_scale)=="Question.7.5"] <- "EthnicitySouthAsian"
+colnames(df_scale)[colnames(df_scale)=="Question.7.6"] <- "EthnicityEastAsian"
+colnames(df_scale)[colnames(df_scale)=="Question.7.7"] <- "EthnicityMiddleEastern"
+colnames(df_scale)[colnames(df_scale)=="Question.7.8"] <- "EthnicityIndigenous"
+colnames(df_scale)[colnames(df_scale)=="Question.7.9"] <- "EthnicityMetis"
+colnames(df_scale)[colnames(df_scale)=="Question.7.10"] <- "EthnicityInuit"
+colnames(df_scale)[colnames(df_scale)=="Question.7.11"] <- "EthnicityPreferNotToAnswer"
+colnames(df_scale)[colnames(df_scale)=="Question.7.12"] <- "EthnicitySelfDescribeTF"
+colnames(df_scale)[colnames(df_scale)=="Question.7.13"] <- "EthnicitySelfDescribeText"
+
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q8.ChoiceTextEntryValue.."] <- "ParentalEducation"
+
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q9.ChoiceTextEntryValue.."] <- "Ladder"
+
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q10.ChoiceTextEntryValue.."] <- "Feedback"
+
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q11.ChoiceTextEntryValue.."] <- "InternationalDomesticStudent"
+
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q12.ChoiceTextEntryValue.."] <- "UndergradYear"
+
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q13.ChoiceTextEntryValue.."] <- "PartOrFullTime"
+
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q14.ChoiceTextEntryValue.."] <- "Faculty"
+
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q15.ChoiceTextEntryValue.."] <- "GPA"
+
+```
+
+Change/fix responses to be accurate/meaningful:
+```{r}
+#Change 0 to NA 
+df_scale[df_scale == 0] <- NA #Note this also changes several '0' responses in the GPA question to NA, will either need workaround or assume that is a 'no response' since I don't think you can be enrolled with a 0 GPA
+
+#Change Gender Identity responses to text 
+df_scale$GenderAgender[df_scale$GenderAgender == 1] <- "agender"
+df_scale$GenderCisgenderMan[df_scale$GenderCisgenderMan == 1] <- "cisgender_man"
+df_scale$GenderCisgenderWoman[df_scale$GenderCisgenderWoman == 1] <- "cisgender_woman"
+df_scale$GenderGenderfluid[df_scale$GenderGenderfluid == 1] <- "genderfluid"
+df_scale$GenderGenderqueer[df_scale$GenderGenderqueer == 1] <- "genderqueer"
+df_scale$GenderNonBinary[df_scale$GenderNonBinary == 1] <- "nonbinary"
+df_scale$GenderTransWoman[df_scale$GenderTransWoman == 1] <- "trans_woman"
+df_scale$GenderTransMan[df_scale$GenderTransMan == 1] <- "trans_man"
+df_scale$GenderTwoSpirit[df_scale$GenderTwoSpirit == 1] <- "two_spirit"
+df_scale$GenderPreferNotToAnswer[df_scale$GenderPreferNotToAnswer == 1] <- "Prefer_not_to_answer"
+
+#Change Sexuality responses to text
+df_scale$SexualityAsexualAceSpectrum[df_scale$SexualityAsexualAceSpectrum == 1] <- "asexual"
+df_scale$SexualityBisexual[df_scale$SexualityBisexual == 1] <- "bisexual"
+df_scale$SexualityGay[df_scale$SexualityGay == 1] <- "gay"
+df_scale$SexualityLesbian[df_scale$SexualityLesbian == 1] <- "lesbian"
+df_scale$SexualityPansexual[df_scale$SexualityPansexual == 1] <- "pansexual"
+df_scale$SexualityQueer[df_scale$SexualityQueer == 1] <- "queer"
+df_scale$SexualityStraightHeterosexual[df_scale$SexualityStraightHeterosexual == 1] <- "straight/heterosexual"
+df_scale$SexualityPreferNotToAnswer[df_scale$SexualityPreferNotToAnswer == 1] <- "Prefer_not_to_answer"
+
+#Change Ethnicity responses to text
+df_scale$EthnicityWhiteEuropean[df_scale$EthnicityWhiteEuropean == 1] <- "White/European"
+df_scale$EthnicityBlackAfricanCaribbean[df_scale$EthnicityBlackAfricanCaribbean == 1] <- "Black/African/Caribbean"
+df_scale$EthnicityHispanicLatino[df_scale$EthnicityHispanicLatino == 1] <- "Hispanic/Latino"
+df_scale$EthnicityAsian[df_scale$EthnicityAsian == 1] <- "Asian"
+df_scale$EthnicitySouthAsian[df_scale$EthnicitySouthAsian == 1] <- "South_Asian"
+df_scale$EthnicityEastAsian[df_scale$EthnicityEastAsian == 1] <- "East_Asian"
+df_scale$EthnicityMiddleEastern[df_scale$EthnicityMiddleEastern == 1] <- "Middle_Eastern"
+df_scale$EthnicityIndigenous[df_scale$EthnicityIndigenous == 1] <- "Indigenous"
+df_scale$EthnicityMetis[df_scale$EthnicityMetis == 1] <- "Metis"
+df_scale$EthnicityInuit[df_scale$EthnicityInuit == 1] <- "Inuit"
+df_scale$EthnicityPreferNotToAnswer[df_scale$EthnicityPreferNotToAnswer == 1] <- "Prefer_not_to_answer"
+
+#Ladder SES Q - Reverse code to match question text, came in backwards
+df_scale$Ladder <- as.numeric(df_scale$Ladder)
+#df_scale$Ladder[df_scale$Ladder == 11] <- NA (No prefer not to respond option for DREAMS Term 1) 
+df_scale$Ladder <- 11 - df_scale$Ladder
+
+#Age - Change numbers to match question text, change 'prefer not to respond' to NA
+df_scale$Age <- as.numeric(df_scale$Age)
+df_scale$Age <- 16 + df_scale$Age
+df_scale$Age[df_scale$Age == 36] <- NA
+
+#Parental Education SES Q - Change 'prefer not to respond' option (7) to NA
+df_scale$ParentalEducation[df_scale$ParentalEducation == 7] <- NA
+#see key below for value meanings
+
+#International or Domestic student status - change prefer not to respond option (3) to NA, Factor and make responses to text
+df_scale$InternationalDomesticStudent[df_scale$InternationalDomesticStudent == 3] <- NA
+df_scale$InternationalDomesticStudent <- factor(df_scale$InternationalDomesticStudent, levels = c(1,2), labels = c("International", "Domestic"))
+
+#Undergrad Year - Change 'prefer not to respond' option to NA
+df_scale$UndergradYear[df_scale$UndergradYear == 6] <- NA
+
+#Part or Full Time student - change prefer not to respond option (3) to NA, Factor and make responses to text
+df_scale$PartOrFullTime[df_scale$PartOrFullTime == 3] <- NA
+df_scale$PartOrFullTime <- factor(df_scale$PartOrFullTime, levels = c(1,2), labels = c("Part", "Full"))
+
+#Faculty - change prefer not to respond option (8) to NA
+df_scale$Faculty[df_scale$Faculty == 8] <- NA
+
+#GPA - correct responses to consistent format, use percentage
+df_scale$GPA <- sub(',', '.', df_scale$GPA)
+df_scale$GPA <- as.numeric(df_scale$GPA)
+df_scale$GPA <- round(df_scale$GPA, digits = 1)
+#Get list of all unique values:
+gpa <- unique(df_scale$GPA)
+gpa <- sort(gpa, decreasing = TRUE)
+gpa
+#GPAs that need to be corrected include the following values in the following manner, following the equivalency table at (https://students.ok.ubc.ca/academic-success/grades-performance/):
+df_scale$GPA <- mapvalues(df_scale$GPA, 4.3, 89) 
+df_scale$GPA <- mapvalues(df_scale$GPA, 4.0, 86) 
+df_scale$GPA <- mapvalues(df_scale$GPA, 3.9, 84) 
+df_scale$GPA <- mapvalues(df_scale$GPA, 3.8, 82) 
+df_scale$GPA <- mapvalues(df_scale$GPA, 3.7, 80) 
+df_scale$GPA <- mapvalues(df_scale$GPA, 3.6, 79)
+df_scale$GPA <- mapvalues(df_scale$GPA, 3.5, 78)
+df_scale$GPA <- mapvalues(df_scale$GPA, 3.4, 77)
+df_scale$GPA <- mapvalues(df_scale$GPA, 3.3, 76)
+df_scale$GPA <- mapvalues(df_scale$GPA, 3.0, 73)
+df_scale$GPA <- mapvalues(df_scale$GPA, 2.7, 69)
+df_scale$GPA <- mapvalues(df_scale$GPA, 2.5, 65)
+df_scale$GPA <- mapvalues(df_scale$GPA, 2.4, 64)
+df_scale$GPA <- mapvalues(df_scale$GPA, 2.0, 60)
+#change non-meaningful responses to NA (assuming 0 is non-response)
+df_scale$GPA[df_scale$GPA == 0] <- NA
+df_scale$GPA[df_scale$GPA == 123456789.0] <- NA
+
+```
+
+Parental Education SES Question Key:
+
+* 1 = 'Primary education (i.e., elementary school)' 
+* 2 = 'Secondary education (i.e., high school)' 
+* 3 = 'Some post-secondary education (e.g., attending college or university for some years)' 
+* 4 = 'Post-secondary education (i.e., college or university degree)' 
+* 5 = 'Master’s degree' 
+* 6 = 'Doctoral degree' 
+* 7 = 'Prefer not to answer'
+
+Faculty Question Key:
+* 1 = 'Irving K. Barber Faculty of Arts and Social Sciences' 
+* 2 = 'Irving K. Barber Faculty of Science' 
+* 3 = 'Faculty of Creative and Critical Studies' 
+* 4 = 'Okanagan School of Education' 
+* 5 = 'School of Engineering' 
+* 6 = 'Faculty of Health and Social Development' 
+* 7 = 'Faculty of Management' 
+* 8 = 'Prefer not to answer'
+
+
+
+Participant 633e3bfaffd6a10b33303ef5 responded 'women' to gender question in self describe. Changed to cisgender_woman in proper format to avoid being categorized as GSM, along with other related columns (Participant also reported straight for sexuality)
+```{r}
+df_scale <- within(df_scale, GenderCisgenderWoman[id == '633e3bfaffd6a10b33303ef5'] <- 'cisgender_woman')
+#df_scale <- within(df_scale, GenderIdentity[id == '633e3bfaffd6a10b33303ef5'] <- 'cisgender_woman')
+#df_scale <- within(df_scale, GSM[id == '633e3bfaffd6a10b33303ef5'] <- FALSE)
+df_scale <- within(df_scale, GenderSelfDescribeText[id == '633e3bfaffd6a10b33303ef5'] <- NA)
+df_scale <- within(df_scale, GenderSelfDescribeTF[id == '633e3bfaffd6a10b33303ef5'] <- NA)
+```
+
+
+
+Concatenate into single column for each multiple response option question:
+```{r}
+
+#Gender Identity
+df_scale <- df_scale %>%
+  unite("GenderIdentity", c("GenderAgender":"GenderPreferNotToAnswer","GenderSelfDescribeText"), sep= "-", 
+        remove = FALSE, na.rm = TRUE)
+
+#Sexual Orientation
+df_scale <- df_scale %>%
+  unite("SexualOrientation", c("SexualityAsexualAceSpectrum":"SexualityPreferNotToAnswer","SexualitySelfDescribeText"), sep= "-", 
+        remove = FALSE, na.rm = TRUE)
+
+#Ethnicity
+df_scale <- df_scale %>%
+  unite("Ethnicity", c("EthnicityWhiteEuropean":"EthnicityPreferNotToAnswer","EthnicitySelfDescribeText"), sep= "-", 
+        remove = FALSE, na.rm = TRUE)
+
+```
+
+Make column for GSM variable:
+```{r}
+df_scale <- df_scale %>%
+  add_column(GSM = if_else(.$GenderIdentity %in% "cisgender_man" | .$GenderIdentity %in% "cisgender_woman" & .$SexualOrientation %in% "straight/heterosexual", FALSE, TRUE), .after = "id")
+
+#See how many GSM participants (shows count of # of TRUE values in column)
+sum(df_scale$GSM)
+
+```
+
+
+## Save the file
+
+Save cleaned datasets:
+```{r}
+#Write to Enya's Mac:
+write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Demographics Cleaned Full Part 1.csv')
+
+#Second dataset with just one column per question plus GSM:
+df_core <- subset(df_scale, select = c(id, GSM, GenderIdentity, SexualOrientation, Ethnicity, Age, ParentalEducation, Ladder, InternationalDomesticStudent, UndergradYear, PartOrFullTime, Faculty, GPA))
+write.csv(df_core,'/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Demographics Cleaned Condensed Part 1.csv')
+
+#Write to Jess's Mac: 
+
+
+```
