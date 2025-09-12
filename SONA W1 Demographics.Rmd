@@ -40,9 +40,9 @@ Read in the data:
 
 Subset the data to just the items from the Demographics Questionnaire and remove rows that have question headers:
 ```{r}
-df_scale <- subset(df, select = c(X.5, Question.4.1:X..Q...Q15.ChoiceTextEntryValue..))
-df_scale <- df_scale[-c(1,2,3),]
-head(df_scale)
+demo_scale <- subset(df, select = c(X.7, X.13:X.47))
+demo_scale <- demo_scale[-c(1,2,3),]
+head(demo_scale)
 ```
 
 ## Clean up the variables
