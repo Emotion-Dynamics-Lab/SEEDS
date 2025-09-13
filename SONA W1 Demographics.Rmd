@@ -40,8 +40,9 @@ Read in the data:
 
 Subset the data to just the items from the Demographics Questionnaire and remove rows that have question headers:
 ```{r}
-demo_scale <- subset(df, select = c(X.7, X.13:X.47))
-demo_scale <- demo_scale[-c(1,2,3),]
+demo_scale <- subset(df, select = c(X.7, X.13:X.19, X.21:X.47))
+# Column X.20 removed because it was blank?
+demo_scale <- demo_scale[-c(1,2,3,4),]
 head(demo_scale)
 ```
 
