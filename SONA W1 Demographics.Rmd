@@ -77,22 +77,23 @@ colnames(df_scale)[colnames(df_scale)=="Question.5.10"] <- "SexualitySelfDescrib
 colnames(df_scale)[colnames(df_scale)=="X..Q...Q6.ChoiceTextEntryValue.."] <- "Age"
 
 colnames(df_scale)[colnames(df_scale)=="Question.7.1"] <- "EthnicityWhiteEuropean"
-colnames(df_scale)[colnames(df_scale)=="Question.7.2"] <- "EthnicityBlackAfricanCaribbean"
-colnames(df_scale)[colnames(df_scale)=="Question.7.3"] <- "EthnicityHispanicLatino"
-colnames(df_scale)[colnames(df_scale)=="Question.7.4"] <- "EthnicityAsian"
-colnames(df_scale)[colnames(df_scale)=="Question.7.5"] <- "EthnicitySouthAsian"
-colnames(df_scale)[colnames(df_scale)=="Question.7.6"] <- "EthnicityEastAsian"
-colnames(df_scale)[colnames(df_scale)=="Question.7.7"] <- "EthnicityMiddleEastern"
-colnames(df_scale)[colnames(df_scale)=="Question.7.8"] <- "EthnicityIndigenous"
-colnames(df_scale)[colnames(df_scale)=="Question.7.9"] <- "EthnicityMetis"
-colnames(df_scale)[colnames(df_scale)=="Question.7.10"] <- "EthnicityInuit"
-colnames(df_scale)[colnames(df_scale)=="Question.7.11"] <- "EthnicityPreferNotToAnswer"
-colnames(df_scale)[colnames(df_scale)=="Question.7.12"] <- "EthnicitySelfDescribeTF"
-colnames(df_scale)[colnames(df_scale)=="Question.7.13"] <- "EthnicitySelfDescribeText"
+colnames(demo_scale)[colnames(demo_scale)=="X.28"] <- "SexualityPreferNotToSay"
+colnames(demo_scale)[colnames(demo_scale)=="X.29"] <- "SexualitySelfDescribeText"
 
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q8.ChoiceTextEntryValue.."] <- "ParentalEducation"
+colnames(demo_scale)[colnames(demo_scale)=="X.30"] <- "BirthMonth"
+colnames(demo_scale)[colnames(demo_scale)=="X.31"] <- "BirthYear"
 
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q9.ChoiceTextEntryValue.."] <- "Ladder"
+colnames(demo_scale)[colnames(demo_scale)=="X.32"] <- "EthnicityAsian"
+colnames(demo_scale)[colnames(demo_scale)=="X.33"] <- "EthnicityBlackAfrican"
+colnames(demo_scale)[colnames(demo_scale)=="X.34"] <- "EthnicityHispanicLatino"
+colnames(demo_scale)[colnames(demo_scale)=="X.35"] <- "EthnicityIndigenous"
+colnames(demo_scale)[colnames(demo_scale)=="X.36"] <- "EthnicityMiddleEasternNorthAfrican"
+colnames(demo_scale)[colnames(demo_scale)=="X.37"] <- "EthnicityPacificIslander"
+colnames(demo_scale)[colnames(demo_scale)=="X.38"] <- "EthnicityWhiteEuropean"
+colnames(demo_scale)[colnames(demo_scale)=="X.39"] <- "EthnicityPreferNotToSay"
+colnames(demo_scale)[colnames(demo_scale)=="X.40"] <- "EthnicitySelfDescribeText"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.41"] <- "Ladder"
 
 colnames(demo_scale)[colnames(demo_scale)=="X.42"] <- "Feedback"
 
