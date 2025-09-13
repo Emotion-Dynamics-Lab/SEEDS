@@ -106,8 +106,10 @@ Change/fix responses to be accurate/meaningful:
 demo_scale[demo_scale == 0] <- NA #Note this also changes several '0' responses in the GPA question to NA, will either need workaround or assume that is a 'no response' since I don't think you can be enrolled with a 0 GPA
 
 #Change Gender Identity responses to text 
-df_scale$GenderAgender[df_scale$GenderAgender == 1] <- "agender"
-df_scale$GenderCisgenderMan[df_scale$GenderCisgenderMan == 1] <- "cisgender_man"
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 1] <- "trans/transgender_category"
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 2] <- "cisgender_category"
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 3] <- "neither_transgender_nor_cisgender"
+
 df_scale$GenderCisgenderWoman[df_scale$GenderCisgenderWoman == 1] <- "cisgender_woman"
 df_scale$GenderGenderfluid[df_scale$GenderGenderfluid == 1] <- "genderfluid"
 df_scale$GenderGenderqueer[df_scale$GenderGenderqueer == 1] <- "genderqueer"
@@ -149,10 +151,6 @@ df_scale$Ladder <- 11 - df_scale$Ladder
 df_scale$Age <- as.numeric(df_scale$Age)
 df_scale$Age <- 16 + df_scale$Age
 df_scale$Age[df_scale$Age == 36] <- NA
-
-#Parental Education SES Q - Change 'prefer not to respond' option (7) to NA
-df_scale$ParentalEducation[df_scale$ParentalEducation == 7] <- NA
-#see key below for value meanings
 
 #International or Domestic student status - change prefer not to respond option (3) to NA, Factor and make responses to text
 df_scale$InternationalDomesticStudent[df_scale$InternationalDomesticStudent == 3] <- NA
@@ -196,16 +194,6 @@ df_scale$GPA[df_scale$GPA == 0] <- NA
 df_scale$GPA[df_scale$GPA == 123456789.0] <- NA
 
 ```
-
-Parental Education SES Question Key:
-
-* 1 = 'Primary education (i.e., elementary school)' 
-* 2 = 'Secondary education (i.e., high school)' 
-* 3 = 'Some post-secondary education (e.g., attending college or university for some years)' 
-* 4 = 'Post-secondary education (i.e., college or university degree)' 
-* 5 = 'Master’s degree' 
-* 6 = 'Doctoral degree' 
-* 7 = 'Prefer not to answer'
 
 Faculty Question Key:
 * 1 = 'Irving K. Barber Faculty of Arts and Social Sciences' 
