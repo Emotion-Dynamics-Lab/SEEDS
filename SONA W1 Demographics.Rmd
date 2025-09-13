@@ -103,7 +103,7 @@ colnames(demo_scale)[colnames(demo_scale)=="X.47"] <- "GPA"
 Change/fix responses to be accurate/meaningful:
 ```{r}
 #Change 0 to NA 
-df_scale[df_scale == 0] <- NA #Note this also changes several '0' responses in the GPA question to NA, will either need workaround or assume that is a 'no response' since I don't think you can be enrolled with a 0 GPA
+demo_scale[demo_scale == 0] <- NA #Note this also changes several '0' responses in the GPA question to NA, will either need workaround or assume that is a 'no response' since I don't think you can be enrolled with a 0 GPA
 
 #Change Gender Identity responses to text 
 df_scale$GenderAgender[df_scale$GenderAgender == 1] <- "agender"
@@ -118,14 +118,15 @@ df_scale$GenderTwoSpirit[df_scale$GenderTwoSpirit == 1] <- "two_spirit"
 df_scale$GenderPreferNotToAnswer[df_scale$GenderPreferNotToAnswer == 1] <- "Prefer_not_to_answer"
 
 #Change Sexuality responses to text
-df_scale$SexualityAsexualAceSpectrum[df_scale$SexualityAsexualAceSpectrum == 1] <- "asexual"
-df_scale$SexualityBisexual[df_scale$SexualityBisexual == 1] <- "bisexual"
-df_scale$SexualityGay[df_scale$SexualityGay == 1] <- "gay"
-df_scale$SexualityLesbian[df_scale$SexualityLesbian == 1] <- "lesbian"
-df_scale$SexualityPansexual[df_scale$SexualityPansexual == 1] <- "pansexual"
-df_scale$SexualityQueer[df_scale$SexualityQueer == 1] <- "queer"
-df_scale$SexualityStraightHeterosexual[df_scale$SexualityStraightHeterosexual == 1] <- "straight/heterosexual"
-df_scale$SexualityPreferNotToAnswer[df_scale$SexualityPreferNotToAnswer == 1] <- "Prefer_not_to_answer"
+demo_scale$SexualityAsexualAceSpectrum[demo_scale$SexualityAsexualAceSpectrum == 1] <- "asexual"
+demo_scale$SexualityBisexual[demo_scale$SexualityBisexual == 1] <- "bisexual"
+demo_scale$SexualityGay[demo_scale$SexualityGay == 1] <- "gay"
+demo_scale$SexualityLesbian[demo_scale$SexualityLesbian == 1] <- "lesbian"
+demo_scale$SexualityPansexual[demo_scale$SexualityPansexual == 1] <- "pansexual"
+demo_scale$SexualityQueer[demo_scale$SexualityQueer == 1] <- "queer"
+demo_scale$SexualityStraightHeterosexual[demo_scale$SexualityStraightHeterosexual == 1] <- "straight/heterosexual"
+demo_scale$SexualityPreferNotToSay[demo_scale$SexualityPreferNotToSay == 1] <- "Prefer_not_to_say"
+
 
 #Change Ethnicity responses to text
 df_scale$EthnicityWhiteEuropean[df_scale$EthnicityWhiteEuropean == 1] <- "White/European"
