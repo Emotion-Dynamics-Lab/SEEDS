@@ -129,17 +129,16 @@ demo_scale$SexualityPreferNotToSay[demo_scale$SexualityPreferNotToSay == 1] <- "
 
 
 #Change Ethnicity responses to text
-df_scale$EthnicityWhiteEuropean[df_scale$EthnicityWhiteEuropean == 1] <- "White/European"
-df_scale$EthnicityBlackAfricanCaribbean[df_scale$EthnicityBlackAfricanCaribbean == 1] <- "Black/African/Caribbean"
-df_scale$EthnicityHispanicLatino[df_scale$EthnicityHispanicLatino == 1] <- "Hispanic/Latino"
-df_scale$EthnicityAsian[df_scale$EthnicityAsian == 1] <- "Asian"
-df_scale$EthnicitySouthAsian[df_scale$EthnicitySouthAsian == 1] <- "South_Asian"
-df_scale$EthnicityEastAsian[df_scale$EthnicityEastAsian == 1] <- "East_Asian"
-df_scale$EthnicityMiddleEastern[df_scale$EthnicityMiddleEastern == 1] <- "Middle_Eastern"
-df_scale$EthnicityIndigenous[df_scale$EthnicityIndigenous == 1] <- "Indigenous"
-df_scale$EthnicityMetis[df_scale$EthnicityMetis == 1] <- "Metis"
-df_scale$EthnicityInuit[df_scale$EthnicityInuit == 1] <- "Inuit"
-df_scale$EthnicityPreferNotToAnswer[df_scale$EthnicityPreferNotToAnswer == 1] <- "Prefer_not_to_answer"
+
+demo_scale$EthnicityAsian[demo_scale$EthnicityAsian == 1] <- "Asian"
+demo_scale$EthnicityBlackAfrican[demo_scale$EthnicityBlackAfrican == 1] <- "Black/African"
+demo_scale$EthnicityHispanicLatino[demo_scale$EthnicityHispanicLatino == 1] <- "Hispanic/Latino"
+demo_scale$EthnicityIndigenous[demo_scale$EthnicityIndigenous == 1] <- "Indigenous"
+demo_scale$EthnicityMiddleEasternNorthAfrican[demo_scale$EthnicityMiddleEasternNorthAfrican == 1] <- "Middle_Eastern/North_African"
+demo_scale$EthnicityPacificIslander[demo_scale$EthnicityPacificIslander == 1] <- "Pacific_Islander"
+demo_scale$EthnicityWhiteEuropean[demo_scale$EthnicityWhiteEuropean == 1] <- "White/European"
+demo_scale$EthnicityPreferNotToSay[demo_scale$EthnicityPreferNotToSay == 1] <- "Prefer_not_to_say"
+
 
 #Ladder SES Q - Reverse code to match question text, came in backwards
 df_scale$Ladder <- as.numeric(df_scale$Ladder)
