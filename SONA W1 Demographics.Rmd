@@ -150,15 +150,15 @@ df_scale$Age <- 16 + df_scale$Age
 df_scale$Age[df_scale$Age == 36] <- NA
 
 #International or Domestic student status - change prefer not to respond option (3) to NA, Factor and make responses to text
-df_scale$InternationalDomesticStudent[df_scale$InternationalDomesticStudent == 3] <- NA
-df_scale$InternationalDomesticStudent <- factor(df_scale$InternationalDomesticStudent, levels = c(1,2), labels = c("International", "Domestic"))
+demo_scale$InternationalDomesticStudent[demo_scale$InternationalDomesticStudent == 3] <- NA
+demo_scale$InternationalDomesticStudent <- factor(demo_scale$InternationalDomesticStudent, levels = c(1,2), labels = c("International", "Domestic"))
 
 #Undergrad Year - Change 'prefer not to respond' option to NA
-df_scale$UndergradYear[df_scale$UndergradYear == 6] <- NA
+demo_scale$UndergradYear[demo_scale$UndergradYear == 6] <- NA
 
 #Part or Full Time student - change prefer not to respond option (3) to NA, Factor and make responses to text
-df_scale$PartOrFullTime[df_scale$PartOrFullTime == 3] <- NA
-df_scale$PartOrFullTime <- factor(df_scale$PartOrFullTime, levels = c(1,2), labels = c("Part", "Full"))
+demo_scale$PartOrFullTime[demo_scale$PartOrFullTime == 3] <- NA
+demo_scale$PartOrFullTime <- factor(demo_scale$PartOrFullTime, levels = c(1,2), labels = c("Part", "Full"))
 
 #Faculty - change prefer not to respond option (8) to NA
 demo_scale$Faculty[demo_scale$Faculty == 8] <- NA
