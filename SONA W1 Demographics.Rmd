@@ -140,9 +140,9 @@ demo_scale$EthnicityPreferNotToSay[demo_scale$EthnicityPreferNotToSay == 1] <- "
 
 
 #Ladder SES Q - Reverse code to match question text, came in backwards
-df_scale$Ladder <- as.numeric(df_scale$Ladder)
-#df_scale$Ladder[df_scale$Ladder == 11] <- NA (No prefer not to respond option for DREAMS Term 1) 
-df_scale$Ladder <- 11 - df_scale$Ladder
+demo_scale$Ladder <- as.numeric(demo_scale$Ladder)
+#demo_scale$Ladder[demo_scale$Ladder == 11] <- NA (No prefer not to respond option) 
+demo_scale$Ladder <- 11 - demo_scale$Ladder
 
 #Age - Change numbers to match question text, change 'prefer not to respond' to NA
 df_scale$Age <- as.numeric(df_scale$Age)
