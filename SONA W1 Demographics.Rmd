@@ -164,31 +164,32 @@ demo_scale$PartOrFullTime <- factor(demo_scale$PartOrFullTime, levels = c(1,2), 
 demo_scale$Faculty[demo_scale$Faculty == 8] <- NA
 
 #GPA - correct responses to consistent format, use percentage
-df_scale$GPA <- sub(',', '.', df_scale$GPA)
-df_scale$GPA <- as.numeric(df_scale$GPA)
-df_scale$GPA <- round(df_scale$GPA, digits = 1)
+demo_scale$GPA <- sub(',', '.', demo_scale$GPA)
+demo_scale$GPA <- as.numeric(demo_scale$GPA)
+demo_scale$GPA <- round(demo_scale$GPA, digits = 1)
 #Get list of all unique values:
-gpa <- unique(df_scale$GPA)
+gpa <- unique(demo_scale$GPA)
 gpa <- sort(gpa, decreasing = TRUE)
 gpa
 #GPAs that need to be corrected include the following values in the following manner, following the equivalency table at (https://students.ok.ubc.ca/academic-success/grades-performance/):
-df_scale$GPA <- mapvalues(df_scale$GPA, 4.3, 89) 
-df_scale$GPA <- mapvalues(df_scale$GPA, 4.0, 86) 
-df_scale$GPA <- mapvalues(df_scale$GPA, 3.9, 84) 
-df_scale$GPA <- mapvalues(df_scale$GPA, 3.8, 82) 
-df_scale$GPA <- mapvalues(df_scale$GPA, 3.7, 80) 
-df_scale$GPA <- mapvalues(df_scale$GPA, 3.6, 79)
-df_scale$GPA <- mapvalues(df_scale$GPA, 3.5, 78)
-df_scale$GPA <- mapvalues(df_scale$GPA, 3.4, 77)
-df_scale$GPA <- mapvalues(df_scale$GPA, 3.3, 76)
-df_scale$GPA <- mapvalues(df_scale$GPA, 3.0, 73)
-df_scale$GPA <- mapvalues(df_scale$GPA, 2.7, 69)
-df_scale$GPA <- mapvalues(df_scale$GPA, 2.5, 65)
-df_scale$GPA <- mapvalues(df_scale$GPA, 2.4, 64)
-df_scale$GPA <- mapvalues(df_scale$GPA, 2.0, 60)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 4.3, 89) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 4.0, 86) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.9, 84) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.8, 82) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.7, 80) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.6, 79)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.5, 78)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.4, 77)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.3, 76)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.0, 73)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.7, 69)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.5, 65)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.4, 64)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.0, 60)
 #change non-meaningful responses to NA (assuming 0 is non-response)
-df_scale$GPA[df_scale$GPA == 0] <- NA
-df_scale$GPA[df_scale$GPA == 123456789.0] <- NA
+demo_scale$GPA[demo_scale$GPA == 0] <- NA
+demo_scale$GPA[demo_scale$GPA == 123456789.0] <- NA
+
 
 ```
 
