@@ -109,15 +109,12 @@ demo_scale[demo_scale == 0] <- NA #Note this also changes several '0' responses 
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 1] <- "trans/transgender_category"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 2] <- "cisgender_category"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 3] <- "neither_transgender_nor_cisgender"
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 4] <- "unsure_gender_trajectory"
+demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 1] <- "binary"
+demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 2] <- "nonbinary"
+demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 3] <- "niether_binary_nor_nonbinary"
+demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 4] <- "gender_binary_unsure"
 
-df_scale$GenderCisgenderWoman[df_scale$GenderCisgenderWoman == 1] <- "cisgender_woman"
-df_scale$GenderGenderfluid[df_scale$GenderGenderfluid == 1] <- "genderfluid"
-df_scale$GenderGenderqueer[df_scale$GenderGenderqueer == 1] <- "genderqueer"
-df_scale$GenderNonBinary[df_scale$GenderNonBinary == 1] <- "nonbinary"
-df_scale$GenderTransWoman[df_scale$GenderTransWoman == 1] <- "trans_woman"
-df_scale$GenderTransMan[df_scale$GenderTransMan == 1] <- "trans_man"
-df_scale$GenderTwoSpirit[df_scale$GenderTwoSpirit == 1] <- "two_spirit"
-df_scale$GenderPreferNotToAnswer[df_scale$GenderPreferNotToAnswer == 1] <- "Prefer_not_to_answer"
 
 #Change Sexuality responses to text
 demo_scale$SexualityAsexualAceSpectrum[demo_scale$SexualityAsexualAceSpectrum == 1] <- "asexual"
@@ -164,7 +161,7 @@ df_scale$PartOrFullTime[df_scale$PartOrFullTime == 3] <- NA
 df_scale$PartOrFullTime <- factor(df_scale$PartOrFullTime, levels = c(1,2), labels = c("Part", "Full"))
 
 #Faculty - change prefer not to respond option (8) to NA
-df_scale$Faculty[df_scale$Faculty == 8] <- NA
+demo_scale$Faculty[demo_scale$Faculty == 8] <- NA
 
 #GPA - correct responses to consistent format, use percentage
 df_scale$GPA <- sub(',', '.', df_scale$GPA)
