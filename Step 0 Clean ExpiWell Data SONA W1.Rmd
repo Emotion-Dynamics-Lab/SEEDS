@@ -31,18 +31,24 @@ df <- as.data.frame(df)
 
 ```
 
-Remove the pilot data and other problem response sets:
+Remove the responses of participants who were excluded from SONA W1 (based on Laura's table on Notion):
 ```{r}
-df = filter(df, !(X.5 %in% c("5f7e34451bbd0d2c6bca2c6d",
-                             "62bb560992331d0dde4bf21a",
-                             "6145093612819202d9ddbe9d",
-                             "6350d2b2662e7e0b4403e03b",
-                             "6350f1b5446f650b44e98adf",
-                             "63c70a2ec250ac43a2190522",
-                             "63c78e41c250ac43a2197a89"
-                            )))
+df = filter(df, !(X.7 %in% c("671aac0a0b815edbd145b198",
+                             "6721667458bf00003be6d300",
+                             "672e8b5407bba7b9512bf3d0",
+                             "67328b2407bba7b9514aec60",
+                             "672e74b207bba7b9512af867",
+                             "673d56d07fe91c850d7a4ca1",
+                             "6731173f07bba7b9513ebc67",
+                             "641b9cdaac65ad0b40fd1257",
+                             "673fc7d843b871a93757268a",
+                             "673ff63c43b871a93758e1fe",
+                             "673ffea7917fbaa5392169b5",
+                             "6742ffe0917fbaa5393414fd",
+                             "672e5b5907bba7b9512a155b")))
 
-df = filter(df, !(X.5 %in% "636ab12fd258f30b434742bc" & X.1 %in% "11/08/2022 05:02PM"))
+
+df = filter(df, !(X.7 %in% "68081d1b08fd7252206058af" & X.1 %in% "11/08/2022 05:02PM"))
 
 #Participants "5f7e34451bbd0d2c6bca2c6d","62bb560992331d0dde4bf21a", "6145093612819202d9ddbe9d" are all pilot data. 
 
