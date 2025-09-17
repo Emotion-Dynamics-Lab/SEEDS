@@ -47,6 +47,23 @@ df = filter(df, !(X.7 %in% c("671aac0a0b815edbd145b198",
                              "6742ffe0917fbaa5393414fd",
                              "672e5b5907bba7b9512a155b")))
 
+#Participants "671aac0a0b815edbd145b198","6721667458bf00003be6d300","672e8b5407bba7b9512bf3d0","67328b2407bba7b9514aec60","672e74b207bba7b9512af867","673d56d07fe91c850d7a4ca1","6731173f07bba7b9513ebc67","641b9cdaac65ad0b40fd1257", "673fc7d843b871a93757268a","673ff63c43b871a93758e1fe","673ffea7917fbaa5392169b","6742ffe0917fbaa5393414fd" - emails were not found on SONA.
+
+# Participant 672e5b5907bba7b9512a155b = duplicate entry. Participant indicated that they have not used this account since 2024.
+
+# 2 entries for: 
+# "673519a4645ca7ce4538dcb5" = All responses are the same, except for the very last item. Duration is different.
+# "67351413645ca7ce453892a6" = All responses are the same, except for the very last item. Duration is different.
+# "673422707037504722b3e371" = All responses are the same, except for the very last item. Duration is different.
+# "67341fb97037504722b3ca1f" = All responses are the same, except for the very last item. Duration is different.
+# "6733da957037504722b0a54d" = All responses are the same, except for the very last item. Duration is different.
+# "673396047037504722ad2def" = All responses are the same, except for the very last item. Duration is different.
+# "67339fbd7037504722adaa84" = All responses are the same, except for the very last item. Duration is different.
+# "67328ca107bba7b9514afe8a" = All responses are the same, except for the very last item. Duration is different.
+# "64e692bf45191ff324ed01d6" = All responses are the same, except for the very last item. Duration is different.
+# "633e3cd6ffd6a10b33304058" = IP addresses + start/finish times are different. Some item responses are different.
+
+
 
 df = filter(df, !(X.7 %in% "68081d1b08fd7252206058af" & X.1 %in% "11/08/2022 05:02PM"))
 
