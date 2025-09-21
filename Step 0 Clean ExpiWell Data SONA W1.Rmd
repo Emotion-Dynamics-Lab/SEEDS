@@ -63,6 +63,10 @@ df = filter(df, !(X.7 %in% c("671aac0a0b815edbd145b198",
 # "64e692bf45191ff324ed01d6" = All responses are the same, except for the very last item. Duration is different.
 # "633e3cd6ffd6a10b33304058" = IP addresses + start/finish times are different. Some item responses are different.
 
+# Will discuss the above during Sept. 23rd SEEDS meeting.
+
+# PLEASE IGNORE Below - these are functions from Enya's file. Keeping them for guidance!
+
 
 
 df = filter(df, !(X.7 %in% "68081d1b08fd7252206058af" & X.1 %in% "11/08/2022 05:02PM"))
