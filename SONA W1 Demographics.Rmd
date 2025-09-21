@@ -41,7 +41,6 @@ Read in the data:
 Subset the data to just the items from the Demographics Questionnaire and remove rows that have question headers:
 ```{r}
 demo_scale <- subset(df, select = c(X.7, X.13:X.19, X.21:X.47))
-# Column X.20 removed because it was blank?
 demo_scale <- demo_scale[-c(1,2,3,4),]
 head(demo_scale)
 ```
@@ -144,10 +143,11 @@ demo_scale$Ladder <- as.numeric(demo_scale$Ladder)
 #demo_scale$Ladder[demo_scale$Ladder == 11] <- NA (No prefer not to respond option) 
 demo_scale$Ladder <- 11 - demo_scale$Ladder
 
+# TO DO: Refer to Jess's script about date math using data and when they completed the survey. Recode all months to numbers. Ignore below for now:
 #Age - Change numbers to match question text, change 'prefer not to respond' to NA
-df_scale$Age <- as.numeric(df_scale$Age)
-df_scale$Age <- 16 + df_scale$Age
-df_scale$Age[df_scale$Age == 36] <- NA
+demo_scale$Age <- as.numeric(df_scale$Age)
+demo_scale$Age <- 16 + df_scale$Age
+demo_scale$Age[df_scale$Age == 36] <- NA
 
 #International or Domestic student status - change prefer not to respond option (3) to NA, Factor and make responses to text
 demo_scale$InternationalDomesticStudent[demo_scale$InternationalDomesticStudent == 3] <- NA
@@ -165,7 +165,7 @@ demo_scale$Faculty[demo_scale$Faculty == 8] <- NA
 
 ```
 
-GPA. Note that we can use the information at [this site](https://students.ok.ubc.ca/academic-success/grades-performance/) to convert percentage to GPA when manually recoding.
+GPA. Note that we can use the information at [this site](https://students.ok.ubc.ca/academic-success/grades-performance/) to convert percentage to GPA when manually recoding. Hardcode any percentages to GPA!
 ```{r}
 
 # Check out all responses in a table:
@@ -212,6 +212,7 @@ Faculty Question Key:
 * 8 = 'Prefer not to answer'
 
 
+# Below are participants Enya manually recoded. Hayleigh will do this for any P who had weird responses to the GPA question. Can view list of responses using the table() function. For the gender self-describe text, pick 1 convention and hardcode responses into consistent category (e.g., woman = women, w, female, etc.). Femme & gender queer are their own categories.
 
 Participant 633e3bfaffd6a10b33303ef5 responded 'women' to gender question in self describe. Changed to cisgender_woman in proper format to avoid being categorized as GSM, along with other related columns (Participant also reported straight for sexuality)
 ```{r}
@@ -228,17 +229,17 @@ Concatenate into single column for each multiple response option question:
 ```{r}
 
 #Gender Identity
-df_scale <- df_scale %>%
+demo_scale <- demo_scale %>%
   unite("GenderIdentity", c("GenderAgender":"GenderPreferNotToAnswer","GenderSelfDescribeText"), sep= "-", 
         remove = FALSE, na.rm = TRUE)
 
 #Sexual Orientation
-df_scale <- df_scale %>%
+demo_scale <- demo_scale %>%
   unite("SexualOrientation", c("SexualityAsexualAceSpectrum":"SexualityPreferNotToAnswer","SexualitySelfDescribeText"), sep= "-", 
         remove = FALSE, na.rm = TRUE)
 
 #Ethnicity
-df_scale <- df_scale %>%
+demo_scale <- demo_scale %>%
   unite("Ethnicity", c("EthnicityWhiteEuropean":"EthnicityPreferNotToAnswer","EthnicitySelfDescribeText"), sep= "-", 
         remove = FALSE, na.rm = TRUE)
 
@@ -246,11 +247,11 @@ df_scale <- df_scale %>%
 
 Make column for GSM variable:
 ```{r}
-df_scale <- df_scale %>%
+demo_scale <- demo_scale %>%
   add_column(GSM = if_else(.$GenderIdentity %in% "cisgender_man" | .$GenderIdentity %in% "cisgender_woman" & .$SexualOrientation %in% "straight/heterosexual", FALSE, TRUE), .after = "id")
 
 #See how many GSM participants (shows count of # of TRUE values in column)
-sum(df_scale$GSM)
+sum(demo_scale$GSM)
 
 ```
 
