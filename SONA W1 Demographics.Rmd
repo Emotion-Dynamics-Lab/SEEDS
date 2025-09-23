@@ -195,6 +195,20 @@ demo_scale$BirthMonth <- as.numeric(demo_scale$BirthMonth)
 
 table(demo_scale$BirthMonth) # check to make sure
 
+# Clean up BirthYear column to keep 4-digit numbers
+demo_scale <- demo_scale %>%
+  mutate(
+    # Remove extra spaces and convert to character string temporarily
+    BirthYear = trimws(as.character(BirthYear)),
+    # Keep only 4-digit numbers, anything else NA (e.g., "22")
+    BirthYear = ifelse(grepl("^[0-9]{4}$", BirthYear), 
+                       as.numeric(BirthYear), 
+                       NA),
+    BirthYear = ifelse(BirthYear > 2006, NA, BirthYear)   # remove unrealistic years - 3 people who entered birth date as 2021 or 2022 - exclude them 
+  )
+
+table(demo_scale$BirthYear) # check to make sure
+
 
 ```
 
