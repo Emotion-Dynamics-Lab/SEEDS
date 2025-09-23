@@ -170,11 +170,7 @@ demo_scale$Faculty[demo_scale$Faculty == 8] <- NA
 
 Age math:
 ```{r}
-# TO DO: Refer to Jess's script about date math using data and when they completed the survey. Recode all months to numbers. Ignore below for now:
-#Age - Change numbers to match question text, change 'prefer not to respond' to NA
-demo_scale$Age <- as.numeric(df_scale$Age)
-demo_scale$Age <- 16 + df_scale$Age
-demo_scale$Age[df_scale$Age == 36] <- NA
+# TO DO: Refer to Jess's script about date math using data and when they completed the survey. Recode all months to numbers.
 
 # Convert entries for BirthMonth to numeric values:
 
@@ -218,6 +214,11 @@ demo_scale <- demo_scale %>%
 
 table(demo_scale$BirthYear) # check to make sure
 
+# Ignore below for now:
+#Age - Change numbers to match question text, change 'prefer not to respond' to NA
+demo_scale$Age <- as.numeric(df_scale$Age)
+demo_scale$Age <- 16 + df_scale$Age
+demo_scale$Age[df_scale$Age == 36] <- NA
 
 ```
 
@@ -227,6 +228,19 @@ GPA. Note that we can use the information at [this site](https://students.ok.ubc
 
 # Check out all responses in a table:
 table(demo_scale$GPA)
+
+# P63f450f75cff4b0b29e0c2ae wrote "4.1 but I think it will go down after this semester" for their GPA. Change this to "4.1".
+demo_scale$GPA[demo_scale$id == "63f450f75cff4b0b29e0c2ae"] <- 4.1
+
+# P63df325dc4c1eb0b4368c26b wrote "3.0 on a 4 scale, Average 86.5" for their GPA. Not sure? Converting a 3.0 on a 4.0 scale to 4.33 scale would be average of 75%? Change to NA.
+demo_scale$GPA[demo_scale$id == "63df325dc4c1eb0b4368c26b"] <- NA
+
+# P67354782645ca7ce453b0c72 wrote "2.8/3?". Change to NA
+demo_scale$GPA[demo_scale$id == "67354782645ca7ce453b0c72"] <- NA
+
+# P67120e498f27e709d422380e wrote "I’m not sure! Maybe around 3.7". Change to NA
+demo_scale$GPA[demo_scale$id == "67120e498f27e709d422380e"] <- NA
+
 
 #GPA - correct responses to consistent format, use percentage
 demo_scale$GPA <- sub(',', '.', demo_scale$GPA)
@@ -269,7 +283,14 @@ Faculty Question Key:
 * 8 = 'Prefer not to answer'
 
 
-# Below are participants Enya manually recoded. Hayleigh will do this for any P who had weird responses to the GPA question. Can view list of responses using the table() function. For the gender self-describe text, pick 1 convention and hardcode responses into consistent category (e.g., woman = women, w, female, etc.). Femme & gender queer are their own categories.
+# Below are participants Enya manually recoded. Hayleigh will do this for any P who had weird responses to the GPA question. Can view list of responses using the table() function. 
+```{r}
+
+
+
+```
+
+
 
 Participant 633e3bfaffd6a10b33303ef5 responded 'women' to gender question in self describe. Changed to cisgender_woman in proper format to avoid being categorized as GSM, along with other related columns (Participant also reported straight for sexuality)
 ```{r}
