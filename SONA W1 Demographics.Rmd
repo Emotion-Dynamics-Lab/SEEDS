@@ -114,6 +114,15 @@ demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 2] <- "nonbin
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 3] <- "niether_binary_nor_nonbinary"
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 4] <- "gender_binary_unsure"
 
+#Change Gender SelfDescribe responses to be a consistent formatting:
+demo_scale$GenderSelfDescribeText <- tolower(trimws(demo_scale$GenderSelfDescribeText)) #removes extra spaces and turns responses lowercase
+# Create "man" category:
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("m", "male", "Male", "man")] <- "man"
+# Create "woman" category:
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("w", "f", "female", "w", "woman", "woman, cisgender", "women")] <- "woman"
+# Assign nonsencial values as NA:
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c(".", "fe", "11", "age", "b", "f, fe", "february", "h", "j", "me", "y")] <- NA
+table(demo_scale$GenderSelfDescribeText)
 
 #Change Sexuality responses to text
 demo_scale$SexualityAsexualAceSpectrum[demo_scale$SexualityAsexualAceSpectrum == 1] <- "asexual"
