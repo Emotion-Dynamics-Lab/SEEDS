@@ -240,10 +240,11 @@ demo_scale$GPA[demo_scale$id == "67354782645ca7ce453b0c72"] <- NA
 
 # P67120e498f27e709d422380e wrote "I’m not sure! Maybe around 3.7". Change to NA
 demo_scale$GPA[demo_scale$id == "67120e498f27e709d422380e"] <- NA
+demo_scale <- demo_scale %>%
+  mutate(
+    # Remove everything except digits and decimal points - some people put % signs
+    GPA = gsub("[^0-9.]", "", GPA))
 
-
-#GPA - correct responses to consistent format, use percentage
-demo_scale$GPA <- sub(',', '.', demo_scale$GPA)
 demo_scale$GPA <- as.numeric(demo_scale$GPA)
 demo_scale$GPA <- round(demo_scale$GPA, digits = 1)
 #Get list of all unique values:
@@ -251,7 +252,8 @@ gpa <- unique(demo_scale$GPA)
 gpa <- sort(gpa, decreasing = TRUE)
 gpa
 #GPAs that need to be corrected include the following values in the following manner, following the equivalency table at (https://students.ok.ubc.ca/academic-success/grades-performance/):
-demo_scale$GPA <- mapvalues(demo_scale$GPA, 4.3, 89) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 4.3, 89)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 4.1, 87)
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 4.0, 86) 
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.9, 84) 
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.8, 82) 
@@ -260,14 +262,22 @@ demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.6, 79)
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.5, 78)
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.4, 77)
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.3, 76)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.2, 75)
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.0, 73)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.9, 71)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.8, 70)
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.7, 69)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.6, 67)
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.5, 65)
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.4, 64)
 demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.0, 60)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 1.8, 58)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 1.0, 50)
+
+table(demo_scale$GPA)
 #change non-meaningful responses to NA (assuming 0 is non-response)
 demo_scale$GPA[demo_scale$GPA == 0] <- NA
-demo_scale$GPA[demo_scale$GPA == 123456789.0] <- NA
+demo_scale$GPA[demo_scale$GPA == 5] <- NA #One participant simply entered 5
 
 
 ```
