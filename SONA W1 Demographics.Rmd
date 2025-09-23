@@ -166,6 +166,44 @@ Age math:
 demo_scale$Age <- as.numeric(df_scale$Age)
 demo_scale$Age <- 16 + df_scale$Age
 demo_scale$Age[df_scale$Age == 36] <- NA
+
+demo_scale$BirthMonth <- tolower(as.character(demo_scale$BirthMonth)) # makes all text entries lower case
+demo_scale$BirthMonth <- trimws(demo_scale$BirthMonth) # Remove leading and trailing spaces
+
+demo_scale$BirthMonth <- ifelse(
+  tolower(demo_scale$BirthMonth) == "january" |
+  tolower(demo_scale$BirthMonth) == "jan", 1, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(
+  tolower(demo_scale$BirthMonth) == "february" |
+  tolower(demo_scale$BirthMonth) == "feb", 2, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(tolower(demo_scale$BirthMonth) == "march", 3, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(
+  tolower(demo_scale$BirthMonth) == "april" |
+    tolower(demo_scale$BirthMonth) == "apr",4, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(tolower(demo_scale$BirthMonth) == "may", 5, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(tolower(demo_scale$BirthMonth) == "june", 6, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(tolower(demo_scale$BirthMonth) == "july", 7, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(
+  tolower(demo_scale$BirthMonth) == "august" |
+  tolower(demo_scale$BirthMonth) == "aug", 8, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(
+  tolower(demo_scale$BirthMonth) == "september" |
+  tolower(demo_scale$BirthMonth) == "sepg" |
+  tolower(demo_scale$BirthMonth) == "septemner", 9, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(
+  tolower(demo_scale$BirthMonth) == "october" |
+  tolower(demo_scale$BirthMonth) == "oct", 10, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(
+  tolower(demo_scale$BirthMonth) == "november" |
+  tolower(demo_scale$BirthMonth) == "nov" |
+  tolower(demo_scale$BirthMonth) == "novem" |
+  tolower(demo_scale$BirthMonth) == "novembef", 11, demo_scale$BirthMonth)
+demo_scale$BirthMonth <- ifelse(
+  tolower(demo_scale$BirthMonth) == "december" | 
+  tolower(demo_scale$BirthMonth) == "dec" |
+  tolower(demo_scale$BirthMonth) == "dece", 12, demo_scale$BirthMonth)
+
+table(demo_scale$BirthMonth)
 ```
 
 
