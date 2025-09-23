@@ -29,7 +29,7 @@ library(reshape2)
 
 ```
 
-Read in the data:
+Read in the data (Will need to change this to Step 0 once Hayleigh finishes the coding):
 ```{r}
 #Hayleigh's Mac:
 # df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/Demographics_SONA_numeric.csv", na.strings=c("","NA"))
@@ -143,12 +143,6 @@ demo_scale$Ladder <- as.numeric(demo_scale$Ladder)
 #demo_scale$Ladder[demo_scale$Ladder == 11] <- NA (No prefer not to respond option) 
 demo_scale$Ladder <- 11 - demo_scale$Ladder
 
-# TO DO: Refer to Jess's script about date math using data and when they completed the survey. Recode all months to numbers. Ignore below for now:
-#Age - Change numbers to match question text, change 'prefer not to respond' to NA
-demo_scale$Age <- as.numeric(df_scale$Age)
-demo_scale$Age <- 16 + df_scale$Age
-demo_scale$Age[df_scale$Age == 36] <- NA
-
 #International or Domestic student status - change prefer not to respond option (3) to NA, Factor and make responses to text
 demo_scale$InternationalDomesticStudent[demo_scale$InternationalDomesticStudent == 3] <- NA
 demo_scale$InternationalDomesticStudent <- factor(demo_scale$InternationalDomesticStudent, levels = c(1,2), labels = c("International", "Domestic"))
@@ -164,6 +158,16 @@ demo_scale$PartOrFullTime <- factor(demo_scale$PartOrFullTime, levels = c(1,2), 
 demo_scale$Faculty[demo_scale$Faculty == 8] <- NA
 
 ```
+
+Age math:
+```{r}
+# TO DO: Refer to Jess's script about date math using data and when they completed the survey. Recode all months to numbers. Ignore below for now:
+#Age - Change numbers to match question text, change 'prefer not to respond' to NA
+demo_scale$Age <- as.numeric(df_scale$Age)
+demo_scale$Age <- 16 + df_scale$Age
+demo_scale$Age[df_scale$Age == 36] <- NA
+```
+
 
 GPA. Note that we can use the information at [this site](https://students.ok.ubc.ca/academic-success/grades-performance/) to convert percentage to GPA when manually recoding. Hardcode any percentages to GPA!
 ```{r}
