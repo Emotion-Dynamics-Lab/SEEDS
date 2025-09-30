@@ -26,6 +26,7 @@ library(psych)
 library(ggplot2)
 library(ggcorrplot)
 library(reshape2)
+library(lubridate)
 
 ```
 
@@ -293,12 +294,7 @@ Faculty Question Key:
 * 8 = 'Prefer not to answer'
 
 
-# Below are participants Enya manually recoded. Hayleigh will do this for any P who had weird responses to the GPA question. Can view list of responses using the table() function. 
-```{r}
 
-
-
-```
 
 
 
