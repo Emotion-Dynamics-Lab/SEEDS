@@ -215,11 +215,25 @@ demo_scale <- demo_scale %>%
 
 table(demo_scale$BirthYear) # check to make sure
 
+# Concatenate month and year data:
+demo_scale$BirthMonth_Year <- paste(demo_scale$BirthYear, "-", demo_scale$BirthMonth)
+typeof(demo_scale$BirthMonth_Year)
+
+# Remove spaces
+demo_scale$BirthMonth_Year <- gsub(" ", "", demo_scale$BirthMonth_Year, fixed = TRUE)
+
+# Turn into date format
+demo_scale$BirthMonth_Year <- ym(demo_scale$BirthMonth_Year)
+
+
+
+
 # Ignore below for now:
 #Age - Change numbers to match question text, change 'prefer not to respond' to NA
 demo_scale$Age <- as.numeric(df_scale$Age)
 demo_scale$Age <- 16 + df_scale$Age
 demo_scale$Age[df_scale$Age == 36] <- NA
+
 
 ```
 
