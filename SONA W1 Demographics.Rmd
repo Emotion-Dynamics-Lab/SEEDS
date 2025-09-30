@@ -41,7 +41,7 @@ Read in the data (Will need to change this to Step 0 once Hayleigh finishes the 
 
 Subset the data to just the items from the Demographics Questionnaire and remove rows that have question headers:
 ```{r}
-demo_scale <- subset(df, select = c(X.7, X.13:X.19, X.21:X.47))
+demo_scale <- subset(df, select = c(X, X.1, X.7, X.13:X.19, X.21:X.47))
 demo_scale <- demo_scale[-c(1,2,3,4),]
 head(demo_scale)
 ```
@@ -50,6 +50,10 @@ head(demo_scale)
 
 Rename the items:
 ```{r}
+
+colnames(demo_scale)[colnames(demo_scale)=="X"] <- "StartDate"
+colnames(demo_scale)[colnames(demo_scale)=="X.1"] <- "EndDate"
+
 colnames(demo_scale)[colnames(demo_scale)=="X.7"] <- "id"
 colnames(demo_scale)[colnames(demo_scale)=="X.13"] <- "GenderSelfDescribeText"
 colnames(demo_scale)[colnames(demo_scale)=="X.14"] <- "GenderTrajectory"
