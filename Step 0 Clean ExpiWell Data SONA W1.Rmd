@@ -49,53 +49,42 @@ df = filter(df, !(X.7 %in% c("671aac0a0b815edbd145b198",
 
 #Participants "671aac0a0b815edbd145b198","6721667458bf00003be6d300","672e8b5407bba7b9512bf3d0","67328b2407bba7b9514aec60","672e74b207bba7b9512af867","673d56d07fe91c850d7a4ca1","6731173f07bba7b9513ebc67","641b9cdaac65ad0b40fd1257", "673fc7d843b871a93757268a","673ff63c43b871a93758e1fe","673ffea7917fbaa5392169b","6742ffe0917fbaa5393414fd" - emails were not found on SONA.
 
-# Participant 672e5b5907bba7b9512a155b = duplicate entry. Participant indicated that they have not used this account since 2024.
 
-# 2 entries for: 
-# "673519a4645ca7ce4538dcb5" = All responses are the same, except for the very last item. Duration is different.
-# "67351413645ca7ce453892a6" = All responses are the same, except for the very last item. Duration is different.
-# "673422707037504722b3e371" = All responses are the same, except for the very last item. Duration is different.
-# "67341fb97037504722b3ca1f" = All responses are the same, except for the very last item. Duration is different.
-# "6733da957037504722b0a54d" = All responses are the same, except for the very last item. Duration is different.
-# "673396047037504722ad2def" = All responses are the same, except for the very last item. Duration is different.
-# "67339fbd7037504722adaa84" = All responses are the same, except for the very last item. Duration is different.
-# "67328ca107bba7b9514afe8a" = All responses are the same, except for the very last item. Duration is different.
-# "64e692bf45191ff324ed01d6" = All responses are the same, except for the very last item. Duration is different.
-# "633e3cd6ffd6a10b33304058" = IP addresses + start/finish times are different. Some item responses are different.
+# Duplicate entries for "673519a4645ca7ce4538dcb5", "67351413645ca7ce453892a6", "673422707037504722b3e371", "67341fb97037504722b3ca1f", "6733da957037504722b0a54d", "673396047037504722ad2def", "67339fbd7037504722adaa84", "67328ca107bba7b9514afe8a", "64e692bf45191ff324ed01d6". For each participant, all responses are the same, except for the very last item. Duration is different. ExpiWell said this was likely caused by a glitch that happened to Android users during mid-November 2024.
 
-# Will discuss the above during Sept. 23rd SEEDS meeting.
-
-# PLEASE IGNORE Below - these are functions from Enya's file. Keeping them for guidance!
+# We decided to keep the second row for each of the above participants.
+df = filter(df, !(X.7 %in% "673519a4645ca7ce4538dcb5" & X.3 %in% "290.143"))
+df = filter(df, !(X.7 %in% "67351413645ca7ce453892a6" & X.3 %in% "187.744"))
+df = filter(df, !(X.7 %in% "673422707037504722b3e371" & X.3 %in% "221.157"))
+df = filter(df, !(X.7 %in% "67341fb97037504722b3ca1f" & X.3 %in% "268.199"))
+df = filter(df, !(X.7 %in% "6733da957037504722b0a54d" & X.3 %in% "183.3"))
+df = filter(df, !(X.7 %in% "673396047037504722ad2def" & X.3 %in% "192.643"))
+df = filter(df, !(X.7 %in% "67339fbd7037504722adaa84" & X.3 %in% "175.484"))
+df = filter(df, !(X.7 %in% "67328ca107bba7b9514afe8a" & X.3 %in% "231.032"))
+df = filter(df, !(X.7 %in% "64e692bf45191ff324ed01d6" & X.3 %in% "183.577"))
 
 
+# "633e3cd6ffd6a10b33304058" = IP addresses + start/finish times are different. Some item responses are different. Participant mistakenly did W1 part again in February 2025. 
 
-df = filter(df, !(X.7 %in% "68081d1b08fd7252206058af" & X.1 %in% "11/08/2022 05:02PM"))
+df = filter(df, !(X.7 %in% "633e3cd6ffd6a10b33304058" & X.1 %in% "02/24/2025 08:36PM"))
 
-#Participants "5f7e34451bbd0d2c6bca2c6d","62bb560992331d0dde4bf21a", "6145093612819202d9ddbe9d" are all pilot data. 
-
-#Participant 6350d2b2662e7e0b4403e03b all messed up (eg BDI irritability has response about crying, numeric shifts to text) 
-#Participants 6350f1b5446f650b44e98adf and 63c70a2ec250ac43a2190522 did the survey in Jan (cutoff in Nov) 
-
-#Participant 63c78e41c250ac43a2197a89 requested data to be removed
-
-#Participant 636ab12fd258f30b434742bc had two sets of responses, removed second (by timestamp)
 
 ```
 
 Remove extra columns:
 ```{r}
 
-cols_remove <- c("X.6", "X.7")
+cols_remove <- c("X.8", "X.9", "X.10", "X.11")
 df <- df[, !(colnames(df) %in% cols_remove)]
 ```
 
 ## Save the data file
 
-Save the data file. This is the file to read in to all Term 1 Step 1 ExpiWell variable preparation scripts.
+Save the data file. This is the file to read in to all SONA W1 ExpiWell variable preparation scripts.
 ```{r, eval = FALSE}
-#On Enya's Mac:
-write.csv(df,'/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv')
+#On Hayleigh's Mac:
+# write.csv(df,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv')
 
 # On Jess's Mac:
-#write.csv(df,'/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv')
+# write.csv(df,"/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv")
 ```
