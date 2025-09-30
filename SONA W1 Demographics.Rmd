@@ -229,18 +229,35 @@ demo_scale$BirthMonth_Year <- gsub(" ", "", demo_scale$BirthMonth_Year, fixed = 
 # Turn into date format
 demo_scale$BirthMonth_Year <- ym(demo_scale$BirthMonth_Year)
 
+# Truncate the `StartDate` variable so it contains only year and month information:
+demo_scale$StartDate2 <- demo_scale$StartDate
+typeof(demo_scale$StartDate2)
 
-
-
-# Ignore below for now:
-#Age - Change numbers to match question text, change 'prefer not to respond' to NA
-demo_scale$Age <- as.numeric(df_scale$Age)
-demo_scale$Age <- 16 + df_scale$Age
-demo_scale$Age[df_scale$Age == 36] <- NA
-
-
+# Keep just the X characters from the left (ymd)
+demo_scale$StartDate2 <-substr(demo_scale$StartDate2, 1, 10)
+demo_scale$StartDate2 <- as.Date(demo_scale$StartDate2)
+typeof(demo_scale$StartDate2)
 ```
 
+Do some calendar math to calculate age:
+```{r}
+demo_scale$Age_Days <- demo_scale$StartDate2 - demo_scale$BirthMonth_Year
+
+# note: there may be a more precise way to calculate this with lubridate given that not all years are 365 days in length
+demo_scale$Age_Years <- demo_scale$Age_Days/365.25
+# Strip days
+demo_scale$Age_Years <-substr(demo_scale$Age_Years, 1, 8)
+demo_scale$Age_Years <- as.numeric(demo_scale$Age_Years)
+describe(demo_scale$Age_Years)
+
+# Calculate age in years using lubridate. Need to dig in to better understand how this is different from the math above. But one of these approaches should be good to adopt.
+demo_scale$Age_Years2 <-year(as.period(interval(demo_scale$BirthMonth_Year, demo_scale$StartDate2)))
+
+demo_scale$Age_Years2 <- car::recode(demo_scale$Age_Years2, "'4' = 18")
+
+describe(demo_scale$Age_Years2)
+
+```
 
 GPA. Note that we can use the information at [this site](https://students.ok.ubc.ca/academic-success/grades-performance/) to convert percentage to GPA when manually recoding. Hardcode any percentages to GPA!
 ```{r}
