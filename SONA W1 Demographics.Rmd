@@ -110,8 +110,8 @@ Change/fix responses to be accurate/meaningful:
 demo_scale[demo_scale == 0] <- NA #Note this also changes several '0' responses in the GPA question to NA, will either need workaround or assume that is a 'no response' since I don't think you can be enrolled with a 0 GPA
 
 #Change Gender Identity responses to text 
-demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 1] <- "trans/transgender_category"
-demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 2] <- "cisgender_category"
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 1] <- "trans/transgender"
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 2] <- "cisgender"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 3] <- "neither_transgender_nor_cisgender"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 4] <- "unsure_gender_trajectory"
 demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText[demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText %in% c("h","n")] <- NA
@@ -352,7 +352,7 @@ Concatenate into single column for each multiple response option question:
 
 #Gender Identity
 demo_scale <- demo_scale %>%
-  unite("GenderIdentity", c("GenderAgender":"GenderPreferNotToAnswer","GenderSelfDescribeText"), sep= "-", 
+  unite("GenderIdentity", c("GenderSelfDescribeText":"GenderNietherBinaryNorNonbinaryText","GenderBinaryRelationUnsureText"), sep= "-", 
         remove = FALSE, na.rm = TRUE)
 
 #Sexual Orientation
@@ -371,7 +371,7 @@ demo_scale <- demo_scale %>%
 Make column for GSM variable:
 ```{r}
 demo_scale <- demo_scale %>%
-  add_column(GSM = if_else(.$GenderTrajectory %in% "cisgender_category" | .$GenderBinaryRelation %in% "binary" & .$SexualOrientation %in% "straight/heterosexual", FALSE, TRUE), .after = "id")
+  add_column(GSM = if_else(.$GenderIdentity %in% "cisgender_category" | .$GenderIdentity %in% "binary" & .$SexualOrientation %in% "straight/heterosexual", FALSE, TRUE), .after = "id")
 
 #See how many GSM participants (shows count of # of TRUE values in column)
 sum(demo_scale$GSM)
