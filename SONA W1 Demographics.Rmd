@@ -114,10 +114,13 @@ demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 1] <- "trans/transgen
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 2] <- "cisgender_category"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 3] <- "neither_transgender_nor_cisgender"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 4] <- "unsure_gender_trajectory"
+demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText[demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText %in% c("h","n")] <- NA
+
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 1] <- "binary"
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 2] <- "nonbinary"
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 3] <- "niether_binary_nor_nonbinary"
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 4] <- "gender_binary_unsure"
+demo_scale$GenderNietherBinaryNorNonbinaryText[demo_scale$GenderNietherBinaryNorNonbinaryText %in% c("b","n")] <- NA
 
 #Change Gender SelfDescribe responses to be a consistent formatting:
 demo_scale$GenderSelfDescribeText <- tolower(trimws(demo_scale$GenderSelfDescribeText)) #removes extra spaces and turns responses lowercase
@@ -333,7 +336,7 @@ Faculty Question Key:
 
 
 
-Participant 633e3bfaffd6a10b33303ef5 responded 'women' to gender question in self describe. Changed to cisgender_woman in proper format to avoid being categorized as GSM, along with other related columns (Participant also reported straight for sexuality)
+ENYA - Participant 633e3bfaffd6a10b33303ef5 responded 'women' to gender question in self describe. Changed to cisgender_woman in proper format to avoid being categorized as GSM, along with other related columns (Participant also reported straight for sexuality)
 ```{r}
 df_scale <- within(df_scale, GenderCisgenderWoman[id == '633e3bfaffd6a10b33303ef5'] <- 'cisgender_woman')
 #df_scale <- within(df_scale, GenderIdentity[id == '633e3bfaffd6a10b33303ef5'] <- 'cisgender_woman')
@@ -354,8 +357,9 @@ demo_scale <- demo_scale %>%
 
 #Sexual Orientation
 demo_scale <- demo_scale %>%
-  unite("SexualOrientation", c("SexualityAsexualAceSpectrum":"SexualityPreferNotToAnswer","SexualitySelfDescribeText"), sep= "-", 
+  unite("SexualOrientation", c("SexualityAsexualAceSpectrum":"SexualityPreferNotToSay","SexualitySelfDescribeText"), sep= "-", 
         remove = FALSE, na.rm = TRUE)
+demo_scale$SexualOrientation[demo_scale$SexualOrientation == ""] <- NA
 
 #Ethnicity
 demo_scale <- demo_scale %>%
