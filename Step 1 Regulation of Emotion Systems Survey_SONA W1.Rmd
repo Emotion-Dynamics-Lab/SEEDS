@@ -1,0 +1,310 @@
+---
+title: "Step 1 Regulation of Emotion Systems Survey"
+author: "Enya Duffield"
+date: "13/11/2022"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+This script will process the data from the Part 1: Regulation of Emotion Systems Survey.
+
+## Preliminary Steps
+
+Load packages:
+
+```{r, warning = FALSE, message = FALSE, include = FALSE}
+library(dplyr)
+library(tidyverse)
+library(Hmisc)
+library(psych)
+library(ggplot2)
+library(ggcorrplot)
+library(reshape2)
+```
+
+Read in the data:
+```{r}
+#Enya's Mac:
+df <- read.csv("/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+# Jess's Mac
+#df <- read.csv("/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+```
+
+Subset the data to just the items from the Regulation of Emotion Systems Survey and remove rows that have question headers:
+```{r}
+df_scale <-  select(df[-c(1,2,3),], X.5 , X..Q...Q60.ChoiceTextEntryValue..:X..Q...Q83.ChoiceTextEntryValue..) 
+head(df_scale)
+```
+
+Rename the items:
+```{r}
+colnames(df_scale)[colnames(df_scale)=="X.5"] <- "id"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q60.ChoiceTextEntryValue.."] <- "ress_1"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q61.ChoiceTextEntryValue.."] <- "ress_2"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q62.ChoiceTextEntryValue.."] <- "ress_3"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q63.ChoiceTextEntryValue.."] <- "ress_4"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q64.ChoiceTextEntryValue.."] <- "ress_5"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q65.ChoiceTextEntryValue.."] <- "ress_6"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q66.ChoiceTextEntryValue.."] <- "ress_7"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q67.ChoiceTextEntryValue.."] <- "ress_8"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q68.ChoiceTextEntryValue.."] <- "ress_9"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q69.ChoiceTextEntryValue.."] <- "ress_10"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q70.ChoiceTextEntryValue.."] <- "ress_11"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q71.ChoiceTextEntryValue.."] <- "ress_12"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q72.ChoiceTextEntryValue.."] <- "ress_13"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q73.ChoiceTextEntryValue.."] <- "ress_14"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q74.ChoiceTextEntryValue.."] <- "ress_15"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q75.ChoiceTextEntryValue.."] <- "ress_16"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q76.ChoiceTextEntryValue.."] <- "ress_17"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q77.ChoiceTextEntryValue.."] <- "ress_18"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q78.ChoiceTextEntryValue.."] <- "ress_19"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q79.ChoiceTextEntryValue.."] <- "ress_20"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q80.ChoiceTextEntryValue.."] <- "ress_21"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q81.ChoiceTextEntryValue.."] <- "ress_22"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q82.ChoiceTextEntryValue.."] <- "ress_23"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q83.ChoiceTextEntryValue.."] <- "ress_24"
+```
+
+Variables are characters and we want to make them numeric values: (removes labels so must be done before)
+```{r}
+
+df_scale[,paste0("ress_",1:24)] <- lapply(df_scale[,paste0("ress_",1:24)], as.numeric)
+str(df_scale)
+
+```
+
+Label the items:
+```{r}
+label(df_scale[["ress_1"]]) <- "Thinking repeatedly about what was bothering me"
+label(df_scale[["ress_2"]]) <- "Using facial expressions to show that I was upset"
+label(df_scale[["ress_3"]]) <- "Thinking of other ways to interpret the situation"
+label(df_scale[["ress_4"]]) <- "Acting like I was not upset"
+label(df_scale[["ress_5"]]) <- "Vocalizing how I was feeling"
+label(df_scale[["ress_6"]]) <- "Focusing on slowing my heart rate and breathing"
+label(df_scale[["ress_7"]]) <- "Immediately working on something to keep myself busy"
+label(df_scale[["ress_8"]]) <- "Continually thinking about what was bothering me"
+label(df_scale[["ress_9"]]) <- "Making sure no one could tell what I was feeling"
+label(df_scale[["ress_10"]]) <- "Doing something else to distract myself"
+label(df_scale[["ress_11"]]) <- "Letting my emotions show"
+label(df_scale[["ress_12"]]) <- "Trying to see the emotional event from a different perspective"
+label(df_scale[["ress_13"]]) <- "Pretending I was not upset"
+label(df_scale[["ress_14"]]) <- "Going over the emotional event again and again in my mind"
+label(df_scale[["ress_15"]]) <- "Looking at the emotional event from a different perspective"
+label(df_scale[["ress_16"]]) <- "Trying to slow my heart rate and breathing"
+label(df_scale[["ress_17"]]) <- "Engaging in something else to keep busy"
+label(df_scale[["ress_18"]]) <- "Hiding my feelings"
+label(df_scale[["ress_19"]]) <- "Taking deep breaths"
+label(df_scale[["ress_20"]]) <- "Showing my feelings"
+label(df_scale[["ress_21"]]) <- "Continually trying to decide what went wrong"
+label(df_scale[["ress_22"]]) <- "Engaging in activities to distract myself"
+label(df_scale[["ress_23"]]) <- "Identifying different angles to see the situation"
+label(df_scale[["ress_24"]]) <- "Decreasing the tension in my body"
+# Look at the data
+head(df_scale)
+```
+
+Convert the "prefer not to respond" options to "NA":
+```{r}
+df_scale[df_scale == 6] <- NA
+
+```
+
+## Calculate the scales
+
+### Calculate the standard mean and sum of subscales
+
+#### Sum and mean scores of subscale. 
+
+Rumination:
+```{r}
+df_scale <- mutate(df_scale, ress_rumination_sum = ress_1 + ress_8 + ress_14 + ress_21)
+
+df_scale$ress_rumination_mean <- apply(df_scale[, c("ress_1", "ress_8", "ress_14", "ress_21")], 1, mean)
+
+label(df_scale[["ress_rumination_sum"]]) <- "sum of ress rumination items"
+label(df_scale[["ress_rumination_mean"]]) <- "mean of ress rumination items"
+
+```
+
+Engagement:
+```{r}
+
+df_scale <- mutate(df_scale, ress_engagement_sum = ress_2 + ress_5 + ress_11 + ress_20)
+
+df_scale$ress_engagement_mean <- apply(df_scale[, c("ress_2", "ress_5", "ress_11", "ress_20")], 1, mean)
+
+label(df_scale[["ress_engagement_sum"]]) <- "sum of ress engagement items"
+label(df_scale[["ress_engagement_mean"]]) <- "mean of ress engagement items"
+
+```
+
+Reappraisal
+```{r}
+df_scale <- mutate(df_scale, ress_reappraisal_sum  = ress_3 + ress_12 + ress_15 + ress_23)
+
+df_scale$ress_reappraisal_mean <- apply(df_scale[, c("ress_3", "ress_12", "ress_15", "ress_23")], 1, mean)
+
+label(df_scale[["ress_reappraisal_sum"]]) <- "sum of ress reappraisal items"
+label(df_scale[["ress_reappraisal_mean"]]) <- "mean of ress reappraisal items"
+
+```
+
+Suppression:
+```{r}
+df_scale <- mutate(df_scale, ress_suppression_sum  = ress_4 + ress_9 + ress_13 + ress_18)
+
+df_scale$ress_suppression_mean <- apply(df_scale[, c("ress_4", "ress_9", "ress_13", "ress_18")], 1, mean)
+
+label(df_scale[["ress_suppression_sum"]]) <- "sum of ress suppression items"
+label(df_scale[["ress_suppression_mean"]]) <- "mean of ress suppression items"
+
+```
+
+Relaxation:
+```{r}
+
+df_scale <- mutate(df_scale, ress_relaxation_sum  = ress_6 + ress_16 + ress_19 + ress_24)
+
+df_scale$ress_relaxation_mean <- apply(df_scale[, c("ress_6", "ress_16", "ress_19", "ress_24")], 1, mean)
+
+label(df_scale[["ress_relaxation_sum"]]) <- "sum of ress relaxation items"
+label(df_scale[["ress_relaxation_mean"]]) <- "mean of ress relaxation items"
+
+```
+
+Distraction:
+```{r}
+
+df_scale <- mutate(df_scale, ress_distraction_sum = ress_7 + ress_10 + ress_17 + ress_22)
+
+df_scale$ress_distraction_mean <- apply(df_scale[, c("ress_7", "ress_10", "ress_17", "ress_22")], 1, mean)
+
+label(df_scale[["ress_distraction_sum"]]) <- "sum of ress distraction items"
+label(df_scale[["ress_distraction_mean"]]) <- "mean of ress distraction items"
+
+```
+
+Save the data file:
+```{r, eval = FALSE}
+#Write to Enya's Mac:
+write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Regulation of Emotion Systems Survey-Part_1.csv')
+
+#Write to Jess's Mac:
+#write.csv(df_final,'/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Regulation of Emotion Systems Survey-Part_1.csv')
+```
+
+##Reliability of the subscales 
+
+Reliability of rumination:
+```{r}
+
+rumination <- subset(df_scale, select = c("ress_1" ,  "ress_8" , "ress_14" , "ress_21"))
+
+psych::alpha(rumination)
+
+```
+
+Reliability of engagement:
+```{r}
+
+engagement <- subset(df_scale, select = c("ress_2" ,  "ress_5" , "ress_11" , "ress_20"))
+
+psych::alpha(engagement)
+
+```
+
+Reliability of reappraisal:
+```{r}
+
+reappraisal <- subset(df_scale, select = c("ress_3" ,  "ress_12" , "ress_15" , "ress_23"))
+
+psych::alpha(reappraisal)
+
+```
+
+Reliability of suppression:
+```{r}
+
+suppression <- subset(df_scale, select = c("ress_4" ,  "ress_9" , "ress_13" , "ress_18"))
+
+psych::alpha(suppression)
+
+```
+
+Reliability of relaxation:
+```{r}
+
+relaxation <- subset(df_scale, select = c("ress_6" ,  "ress_16" , "ress_19" , "ress_24"))
+
+psych::alpha(relaxation)
+
+```
+
+Reliability of distraction:
+```{r}
+
+distraction <- subset(df_scale, select = c("ress_7" ,  "ress_10" , "ress_17" , "ress_22"))
+
+psych::alpha(distraction)
+
+```
+
+## Examine the data
+
+Create a new object containing only the subscales:
+
+```{r}
+df_1 <- subset(df_scale, select = c("ress_rumination_mean", "ress_engagement_mean" , "ress_reappraisal_mean" , "ress_suppression_mean" , "ress_relaxation_mean" , "ress_distraction_mean"))
+```
+
+### Descriptive statistics for subscales
+
+```{r}
+# for subscales
+
+describe(df_1)
+```
+
+### Histograms
+
+Rumination subscale
+```{r, warning = FALSE, message = FALSE}
+qplot(df_scale$ress_rumination_mean, geom="histogram") 
+
+```
+
+Engagement subscale
+```{r, warning = FALSE, message = FALSE}
+qplot(df_scale$ress_engagement_mean, geom="histogram") 
+
+```
+Reappraisal subscale
+```{r, warning = FALSE, message = FALSE}
+
+qplot(df_scale$ress_reappraisal_mean, geom="histogram") 
+
+```
+Suppression subscale
+```{r, warning = FALSE, message = FALSE}
+
+qplot(df_scale$ress_suppression_mean, geom="histogram") 
+
+```
+Relaxation subscale
+```{r, warning = FALSE, message = FALSE}
+
+qplot(df_scale$ress_relaxation_mean, geom="histogram") 
+
+```
+Distraction subscale
+```{r, warning = FALSE, message = FALSE}
+
+qplot(df_scale$ress_distraction_mean, geom="histogram") 
+
+```
