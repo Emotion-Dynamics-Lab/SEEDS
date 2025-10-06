@@ -1,7 +1,7 @@
 ---
 title: "Step 1 Regulation of Emotion Systems Survey"
-author: "Enya Duffield"
-date: "13/11/2022"
+author: "Hayleigh Armstrong"
+date: "06/10/2025"
 output:
   html_document:
     number_sections: yes
@@ -10,7 +10,7 @@ output:
     toc_float: yes
 ---
 
-This script will process the data from the Part 1: Regulation of Emotion Systems Survey.
+This script will process the data from the SONA W1 Part 1: Regulation of Emotion Systems Survey.
 
 ## Preliminary Steps
 
@@ -28,47 +28,47 @@ library(reshape2)
 
 Read in the data:
 ```{r}
-#Enya's Mac:
-df <- read.csv("/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+# Hayleigh's Mac: 
+df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
 
 # Jess's Mac
-#df <- read.csv("/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+#df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
 
 ```
 
 Subset the data to just the items from the Regulation of Emotion Systems Survey and remove rows that have question headers:
 ```{r}
-df_scale <-  select(df[-c(1,2,3),], X.5 , X..Q...Q60.ChoiceTextEntryValue..:X..Q...Q83.ChoiceTextEntryValue..) 
+df_scale <-  select(df[-c(1,2,3,4),], X.7, X.92:X.115) 
 head(df_scale)
 ```
 
 Rename the items:
 ```{r}
-colnames(df_scale)[colnames(df_scale)=="X.5"] <- "id"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q60.ChoiceTextEntryValue.."] <- "ress_1"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q61.ChoiceTextEntryValue.."] <- "ress_2"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q62.ChoiceTextEntryValue.."] <- "ress_3"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q63.ChoiceTextEntryValue.."] <- "ress_4"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q64.ChoiceTextEntryValue.."] <- "ress_5"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q65.ChoiceTextEntryValue.."] <- "ress_6"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q66.ChoiceTextEntryValue.."] <- "ress_7"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q67.ChoiceTextEntryValue.."] <- "ress_8"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q68.ChoiceTextEntryValue.."] <- "ress_9"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q69.ChoiceTextEntryValue.."] <- "ress_10"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q70.ChoiceTextEntryValue.."] <- "ress_11"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q71.ChoiceTextEntryValue.."] <- "ress_12"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q72.ChoiceTextEntryValue.."] <- "ress_13"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q73.ChoiceTextEntryValue.."] <- "ress_14"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q74.ChoiceTextEntryValue.."] <- "ress_15"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q75.ChoiceTextEntryValue.."] <- "ress_16"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q76.ChoiceTextEntryValue.."] <- "ress_17"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q77.ChoiceTextEntryValue.."] <- "ress_18"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q78.ChoiceTextEntryValue.."] <- "ress_19"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q79.ChoiceTextEntryValue.."] <- "ress_20"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q80.ChoiceTextEntryValue.."] <- "ress_21"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q81.ChoiceTextEntryValue.."] <- "ress_22"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q82.ChoiceTextEntryValue.."] <- "ress_23"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q83.ChoiceTextEntryValue.."] <- "ress_24"
+colnames(df_scale)[colnames(df_scale)=="X.7"] <- "id"
+colnames(df_scale)[colnames(df_scale)=="X.92"] <- "ress_1"
+colnames(df_scale)[colnames(df_scale)=="X.93"] <- "ress_2"
+colnames(df_scale)[colnames(df_scale)=="X.94"] <- "ress_3"
+colnames(df_scale)[colnames(df_scale)=="X.95"] <- "ress_4"
+colnames(df_scale)[colnames(df_scale)=="X.96"] <- "ress_5"
+colnames(df_scale)[colnames(df_scale)=="X.97"] <- "ress_6"
+colnames(df_scale)[colnames(df_scale)=="X.98"] <- "ress_7"
+colnames(df_scale)[colnames(df_scale)=="X.99"] <- "ress_8"
+colnames(df_scale)[colnames(df_scale)=="X.100"] <- "ress_9"
+colnames(df_scale)[colnames(df_scale)=="X.101"] <- "ress_10"
+colnames(df_scale)[colnames(df_scale)=="X.102"] <- "ress_11"
+colnames(df_scale)[colnames(df_scale)=="X.103"] <- "ress_12"
+colnames(df_scale)[colnames(df_scale)=="X.104"] <- "ress_13"
+colnames(df_scale)[colnames(df_scale)=="X.105"] <- "ress_14"
+colnames(df_scale)[colnames(df_scale)=="X.106"] <- "ress_15"
+colnames(df_scale)[colnames(df_scale)=="X.107"] <- "ress_16"
+colnames(df_scale)[colnames(df_scale)=="X.108"] <- "ress_17"
+colnames(df_scale)[colnames(df_scale)=="X.109"] <- "ress_18"
+colnames(df_scale)[colnames(df_scale)=="X.110"] <- "ress_19"
+colnames(df_scale)[colnames(df_scale)=="X.111"] <- "ress_20"
+colnames(df_scale)[colnames(df_scale)=="X.112"] <- "ress_21"
+colnames(df_scale)[colnames(df_scale)=="X.113"] <- "ress_22"
+colnames(df_scale)[colnames(df_scale)=="X.114"] <- "ress_23"
+colnames(df_scale)[colnames(df_scale)=="X.115"] <- "ress_24"
 ```
 
 Variables are characters and we want to make them numeric values: (removes labels so must be done before)
@@ -192,11 +192,11 @@ label(df_scale[["ress_distraction_mean"]]) <- "mean of ress distraction items"
 
 Save the data file:
 ```{r, eval = FALSE}
-#Write to Enya's Mac:
-write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Regulation of Emotion Systems Survey-Part_1.csv')
+#Write to Hayleigh's Mac:
+write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/Regulation of Emotion Systems Survey-Part_1.csv')
 
 #Write to Jess's Mac:
-#write.csv(df_final,'/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Regulation of Emotion Systems Survey-Part_1.csv')
+#write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/Regulation of Emotion Systems Survey-Part_1.csv')
 ```
 
 ##Reliability of the subscales 
