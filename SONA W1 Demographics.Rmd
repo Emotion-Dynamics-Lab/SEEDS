@@ -363,7 +363,7 @@ demo_scale$SexualOrientation[demo_scale$SexualOrientation == ""] <- NA
 
 #Ethnicity
 demo_scale <- demo_scale %>%
-  unite("Ethnicity", c("EthnicityWhiteEuropean":"EthnicityPreferNotToAnswer","EthnicitySelfDescribeText"), sep= "-", 
+  unite("Ethnicity", c("EthnicityAsian":"EthnicityPreferNotToSay","EthnicitySelfDescribeText"), sep= "-", 
         remove = FALSE, na.rm = TRUE)
 
 ```
@@ -371,7 +371,7 @@ demo_scale <- demo_scale %>%
 Make column for GSM variable:
 ```{r}
 demo_scale <- demo_scale %>%
-  add_column(GSM = if_else(.$GenderIdentity %in% "cisgender_man" | .$GenderIdentity %in% "cisgender_woman" & .$SexualOrientation %in% "straight/heterosexual", FALSE, TRUE), .after = "id")
+  add_column(GSM = if_else(.$GenderTrajectory %in% "cisgender_category" | .$GenderBinaryRelation %in% "binary" & .$SexualOrientation %in% "straight/heterosexual", FALSE, TRUE), .after = "id")
 
 #See how many GSM participants (shows count of # of TRUE values in column)
 sum(demo_scale$GSM)
