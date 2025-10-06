@@ -1,0 +1,156 @@
+---
+title: "Step 1 BAI_SONA W1"
+author: "Hayleigh Armstrong"
+date: "06/10/2025"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+---
+
+This script will process the data from the SONA W1 - Beck Anxiety Inventory.
+
+## Preliminary Steps
+
+Load packages:
+
+```{r, warning = FALSE, message = FALSE, include = FALSE}
+library(dplyr)
+library(tidyverse)
+library(Hmisc)
+library(psych)
+library(ggplot2)
+library(ggcorrplot)
+library(reshape2)
+```
+
+Read in the data:
+```{r}
+# Hayleigh's Mac: 
+df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+# Jess's Mac:
+#df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+#View(df)
+```
+
+Subset the data to just the items from the Beck Anxiety Inventory Scale and remove rows that have question headers:
+```{r}
+df_scale <- select(df [-c(1,2,3),], X.5, X..Q...Q38.ChoiceTextEntryValue..:X..Q...Q58.ChoiceTextEntryValue..)
+#View(df_scale)
+```
+
+Rename the items:
+```{r}
+colnames(df_scale)[colnames(df_scale)=="X.5"] <- "id"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q38.ChoiceTextEntryValue.."] <- "bai_1"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q39.ChoiceTextEntryValue.."] <- "bai_2"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q40.ChoiceTextEntryValue.."] <- "bai_3"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q41.ChoiceTextEntryValue.."] <- "bai_4"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q42.ChoiceTextEntryValue.."] <- "bai_5"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q43.ChoiceTextEntryValue.."] <- "bai_6"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q44.ChoiceTextEntryValue.."] <- "bai_7"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q45.ChoiceTextEntryValue.."] <- "bai_8"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q46.ChoiceTextEntryValue.."] <- "bai_9"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q47.ChoiceTextEntryValue.."] <- "bai_10"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q48.ChoiceTextEntryValue.."] <- "bai_11"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q49.ChoiceTextEntryValue.."] <- "bai_12"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q50.ChoiceTextEntryValue.."] <- "bai_13"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q51.ChoiceTextEntryValue.."] <- "bai_14"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q52.ChoiceTextEntryValue.."] <- "bai_15"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q53.ChoiceTextEntryValue.."] <- "bai_16"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q54.ChoiceTextEntryValue.."] <- "bai_17"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q55.ChoiceTextEntryValue.."] <- "bai_18"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q56.ChoiceTextEntryValue.."] <- "bai_19"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q57.ChoiceTextEntryValue.."] <- "bai_20"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q58.ChoiceTextEntryValue.."] <- "bai_21"
+```
+
+Convert the "prefer not to respond" option to "NA":
+```{r}
+df_scale[df_scale == 4] <- NA
+
+```
+
+Variables are pulled in as factors and we want to make them numeric values: 
+```{r}
+df_scale[,paste0("bai_",1:21)] <- lapply(df_scale[,paste0("bai_",1:21)], as.numeric)
+str(df_scale)
+```
+
+## Calculate the scale
+
+### Calculate the standard mean and sum
+
+Sum and mean scores of Beck Anxiety Inventory Scale: 
+```{r}
+
+df_scale$bai_sum <- apply(df_scale[,paste0("bai_",1:21)], 1, sum)
+df_scale$bai_mean <- apply(df_scale[,paste0("bai_",1:21)], 1, mean)
+df_scale$bai_mean <- round(df_scale$bai_mean, digits = 2)
+
+```
+
+Label the items:
+```{r}
+label(df_scale[["bai_1"]]) <- "Numbness and tingling"
+label(df_scale[["bai_2"]]) <- "Feeling hot"
+label(df_scale[["bai_3"]]) <- "Wobbliness in legs"
+label(df_scale[["bai_4"]]) <- "Unable to relax"
+label(df_scale[["bai_5"]]) <- "Fear of worst happening"
+label(df_scale[["bai_6"]]) <- "Dizzy or lightheaded"
+label(df_scale[["bai_7"]]) <- "Heart pounding or racing"
+label(df_scale[["bai_8"]]) <- "Unsteady"
+label(df_scale[["bai_9"]]) <- "Terrified"
+label(df_scale[["bai_10"]]) <- "Nervous"
+label(df_scale[["bai_11"]]) <- "Feelings of choking"
+label(df_scale[["bai_12"]]) <- "Hands trembling"
+label(df_scale[["bai_13"]]) <- "Shaky"
+label(df_scale[["bai_14"]]) <- "Fear of losing control"
+label(df_scale[["bai_15"]]) <- "Difficulty breathing"
+label(df_scale[["bai_16"]]) <- "Fear of dying"
+label(df_scale[["bai_17"]]) <- "Scared"
+label(df_scale[["bai_18"]]) <- "Abdominal discomfort"
+label(df_scale[["bai_19"]]) <- "Faint"
+label(df_scale[["bai_20"]]) <- "Face flushed"
+label(df_scale[["bai_21"]]) <- "Sweating (not due to heat)"
+
+label(df_scale[["bai_sum"]]) <- "sum of bai items"
+label(df_scale[["bai_mean"]]) <- "mean of bai items"
+
+# Look at the data
+head(df_scale)
+```
+
+## Save the data 
+
+Save the data file:
+```{r, eval = FALSE}
+# Enya's Mac:
+write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Beck Anxiety Inventory-Part_1.csv')
+
+# Jess's Mac:
+#write.csv(df_scale,'/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Beck Anxiety Inventory-Part_1.csv')
+```
+
+## Examine the Data
+
+### Reliability
+```{r, warning = FALSE}
+items <- c ("bai_1",  "bai_2" , "bai_3" , "bai_4" , "bai_5" , "bai_6" , "bai_7" , "bai_8" , "bai_9",  "bai_10" , "bai_11" , "bai_12" , "bai_13" , "bai_14" , "bai_15" , "bai_16" , "bai_17",  "bai_18" , "bai_19" , "bai_20" , "bai_21")
+alpha(df_scale[,items])
+```
+
+### Descriptive statistics
+```{r}
+describe(df_scale$bai_sum)
+describe(df_scale$bai_mean)
+```
+
+### Histogram
+```{r, warning = FALSE, message = FALSE}
+qplot(df_scale$bai_mean, geom="histogram") 
+```
