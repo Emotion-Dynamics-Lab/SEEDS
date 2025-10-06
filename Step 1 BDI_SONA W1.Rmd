@@ -1,0 +1,184 @@
+---
+title: "Step 1 BDI"
+author: "Enya Duffield"
+date: "11/11/2022"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+This script will process the data from the Part 1 - Beck Depression Inventory. 
+
+## Preliminary Steps
+
+Load packages:
+
+```{r, warning = FALSE, message = FALSE, include = FALSE}
+library(dplyr)
+library(tidyverse)
+library(Hmisc)
+library(psych)
+library(ggplot2)
+library(ggcorrplot)
+library(reshape2)
+```
+
+Read in the data:
+```{r}
+#For Enya's Mac:
+df <- read.csv("/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+# Read onto Jess's Mac
+#df <- read.csv("/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/DREAMS ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+# View(df)
+```
+
+Subset the data to just the items from the Beck Depression Inventory and remove rows that have question headers:
+```{r}
+df_scale <- subset(df, select = c(X.5, X..Q...Q17.ChoiceTextEntryValue..:X..Q...Q36.ChoiceTextEntryValue..))
+df_scale <- df_scale[-c(1,2,3),]
+head(df_scale)
+```
+
+Rename the items:
+```{r}
+colnames(df_scale)[colnames(df_scale)=="X.5"] <- "id"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q17.ChoiceTextEntryValue.."] <- "bdi_1"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q18.ChoiceTextEntryValue.."] <- "bdi_2"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q19.ChoiceTextEntryValue.."] <- "bdi_3"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q20.ChoiceTextEntryValue.."] <- "bdi_4"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q21.ChoiceTextEntryValue.."] <- "bdi_5"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q22.ChoiceTextEntryValue.."] <- "bdi_6"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q23.ChoiceTextEntryValue.."] <- "bdi_7"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q24.ChoiceTextEntryValue.."] <- "bdi_8"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q25.ChoiceTextEntryValue.."] <- "bdi_9"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q26.ChoiceTextEntryValue.."] <- "bdi_10"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q27.ChoiceTextEntryValue.."] <- "bdi_11"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q28.ChoiceTextEntryValue.."] <- "bdi_12"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q29.ChoiceTextEntryValue.."] <- "bdi_13"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q30.ChoiceTextEntryValue.."] <- "bdi_14"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q31.ChoiceTextEntryValue.."] <- "bdi_15"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q32.ChoiceTextEntryValue.."] <- "bdi_16"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q33.ChoiceTextEntryValue.."] <- "bdi_17"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q34.ChoiceTextEntryValue.."] <- "bdi_18"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q35.ChoiceTextEntryValue.."] <- "bdi_19"
+colnames(df_scale)[colnames(df_scale)=="X..Q...Q36.ChoiceTextEntryValue.."] <- "bdi_20"
+head(df_scale)
+```
+
+
+Convert the "prefer not to respond" option to "NA":
+```{r}
+df_scale$bdi_1[df_scale$bdi_1 == 4] <- NA
+df_scale$bdi_2[df_scale$bdi_2 == 4] <- NA
+df_scale$bdi_3[df_scale$bdi_3 == 4] <- NA
+df_scale$bdi_4[df_scale$bdi_4 == 4] <- NA
+df_scale$bdi_5[df_scale$bdi_5 == 4] <- NA
+df_scale$bdi_6[df_scale$bdi_6 == 4] <- NA
+df_scale$bdi_7[df_scale$bdi_7 == 4] <- NA
+df_scale$bdi_8[df_scale$bdi_8 == 4] <- NA
+df_scale$bdi_9[df_scale$bdi_9 == 4] <- NA
+df_scale$bdi_10[df_scale$bdi_10 == 4] <- NA
+df_scale$bdi_11[df_scale$bdi_11 == 4] <- NA
+df_scale$bdi_12[df_scale$bdi_12 == 4] <- NA
+df_scale$bdi_13[df_scale$bdi_13 == 4] <- NA
+df_scale$bdi_14[df_scale$bdi_14 == 4] <- NA
+df_scale$bdi_15[df_scale$bdi_15 == 7] <- NA
+df_scale$bdi_16[df_scale$bdi_16 == 4] <- NA
+df_scale$bdi_17[df_scale$bdi_17 == 7] <- NA
+df_scale$bdi_18[df_scale$bdi_18 == 4] <- NA
+df_scale$bdi_19[df_scale$bdi_19 == 4] <- NA
+df_scale$bdi_20[df_scale$bdi_20 == 4] <- NA 
+#View(df_scale)
+
+
+```
+
+
+Variables are pulled in as factors and we want to make them numeric values: 
+```{r, warning = FALSE}
+
+df_scale[,paste0("bdi_",1:20)] <- lapply(df_scale[,paste0("bdi_",1:20)], as.numeric)
+str(df_scale)
+```
+
+## Calculate the scales
+
+### Calculate the standard mean and sum
+
+Sum and mean scores of Beck Depression Inventory. 
+**Note, this still gives NAs in sum and mean columns if there are any NA's in the data, but it would be easy enough to tell it to ignore NAs if we need to
+```{r}
+
+df_scale$bdi_sum <- apply(df_scale[,paste0("bdi_",1:20)], 1, sum)
+df_scale$bdi_mean <- apply(df_scale[,paste0("bdi_",1:20)], 1, mean)
+
+```
+
+Label the items:
+```{r}
+label(df_scale[["bdi_1"]]) <- "Sadness"
+label(df_scale[["bdi_2"]]) <- "Pessimism"
+label(df_scale[["bdi_3"]]) <- "Past Failure"
+label(df_scale[["bdi_4"]]) <- "Loss of Pleasure"
+label(df_scale[["bdi_5"]]) <- "Guilty Feelings"
+label(df_scale[["bdi_6"]]) <- "Punishment Feelings"
+label(df_scale[["bdi_7"]]) <- "Self-Dislike"
+label(df_scale[["bdi_8"]]) <- "Self-Criticalness"
+label(df_scale[["bdi_9"]]) <- "Crying"
+label(df_scale[["bdi_10"]]) <- "Agitation"
+label(df_scale[["bdi_11"]]) <- "Loss of Interest"
+label(df_scale[["bdi_12"]]) <- "Indecisiveness"
+label(df_scale[["bdi_13"]]) <- "Worthlessness"
+label(df_scale[["bdi_14"]]) <- "Loss of Energy"
+label(df_scale[["bdi_15"]]) <- "Changes in Sleeping Pattern"
+label(df_scale[["bdi_16"]]) <- "Irritability"
+label(df_scale[["bdi_17"]]) <- "Changes in Appetite"
+label(df_scale[["bdi_18"]]) <- "Concentration Difficulty"
+label(df_scale[["bdi_19"]]) <- "Tiredness or Fatigue"
+label(df_scale[["bdi_20"]]) <- "Loss of Interest in Sex"
+
+label(df_scale[["bdi_sum"]]) <- "sum of bdi items"
+label(df_scale[["bdi_mean"]]) <- "mean of bdi items"
+
+```
+
+
+Save the data file:
+```{r, eval = FALSE}
+# Write to Enya's Mac:
+write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Beck Depression Inventory-Part_1.csv')
+
+# Write to Jess's mac
+#write.csv(df_scale,'/Volumes/research/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Beck Depression Inventory-Part_1.csv')
+
+```
+
+## Examine the Data
+
+### Reliability
+```{r, warning = FALSE}
+
+items <- c("bdi_1",  "bdi_2" , "bdi_3" , "bdi_4" , "bdi_5" , "bdi_6" , "bdi_7" , "bdi_8" , "bdi_9" , "bdi_10" , "bdi_11" , "bdi_12" , "bdi_13" , "bdi_14" , "bdi_15" , "bdi_16" , "bdi_17" , "bdi_18" , "bdi_19" , "bdi_20")
+alpha(df_scale[,items])
+
+```
+
+### Descriptive statistics
+```{r}
+describe(df_scale$bdi_sum)
+describe(df_scale$bdi_mean)
+```
+
+
+### Histogram
+```{r, warning = FALSE, message = FALSE}
+
+qplot(df_scale$bdi_mean, geom="histogram") 
+
+```
+
