@@ -384,7 +384,7 @@ sum(demo_scale$GSM)
 Save cleaned datasets:
 ```{r}
 #Write to Enya's Mac:
-write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Demographics Cleaned Full Part 1.csv')
+write.csv(demo_scale,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SONA W1 Demographics Cleaned Full Part 1.csv')
 
 #Second dataset with just one column per question plus GSM:
 df_core <- subset(df_scale, select = c(id, GSM, GenderIdentity, SexualOrientation, Ethnicity, Age, ParentalEducation, Ladder, InternationalDomesticStudent, UndergradYear, PartOrFullTime, Faculty, GPA))
