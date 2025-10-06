@@ -235,7 +235,7 @@ typeof(demo_scale$StartDate2)
 
 # Keep just the X characters from the left (ymd)
 demo_scale$StartDate2 <-substr(demo_scale$StartDate2, 1, 10)
-demo_scale$StartDate2 <- as.Date(demo_scale$StartDate2)
+demo_scale$StartDate2 <- as.Date(demo_scale$StartDate2, format = "%m/%d/%Y")
 typeof(demo_scale$StartDate2)
 ```
 
