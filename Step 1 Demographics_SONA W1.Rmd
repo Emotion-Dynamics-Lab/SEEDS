@@ -387,7 +387,8 @@ demo_scale <- demo_scale %>%
 Make column for GSM variable (Option 1):
 ```{r}
 demo_scale <- demo_scale %>%
-  add_column(GSM = if_else(.$GenderTrajectory %in% "cisgender" &
+  add_column(GSM = if_else(.$GenderSelfDescribeText %in% "woman" | "man" &
+                             .$GenderTrajectory %in% "cisgender" &
                              .$GenderBinaryRelation %in% "binary" &
                              .$SexualOrientation %in% "straight/heterosexual", FALSE, TRUE), .after = "id")
 
@@ -395,9 +396,17 @@ demo_scale <- demo_scale %>%
 sum(demo_scale$GSM)
 
 ```
+
 Option 2: Calculate a variable indicating sexual and gender minority status. We want to code everyone who indicated both cisgender, binary, and heterosexual into `0` and everyone else into `1`.
 ```{r}
 # First recode to a gender minority variable. Note that this is using car, not dplyr
+
+demo_scale$gender_selfdescribe_minority <- car::recode(
+  demo_scale$GenderSelfDescribeText,
+  "'woman' = 0; 'man' = 0; else = 1"
+)
+                                                      
+
 demo_scale$gender_trajectory_minority <- car::recode(demo_scale$GenderTrajectory, "'cisgender' = 0; 
                              'trans/transgender' = 1; 
                              'neither_transgender_nor_cisgender' = 1; 
@@ -422,7 +431,8 @@ demo_scale$sexual_minority <- as.numeric(demo_scale$sexual_minority)
 
 demo_scale$sgm <- demo_scale$gender_trajectory_minority + demo_scale$gender_binary_minority + demo_scale$sexual_minority
 
-# Recode values of 3 = 1 and 2 = 1 into this new sgm variable so that 1 =  sexual/gender minority, 0 = not
+# Recode values of 4 = 1 and 3 = 1 and 2 = 1 into this new sgm variable so that 1 =  sexual/gender minority, 0 = not
+demo_scale$sgm <- car::recode(demo_scale$sgm, "4 = 1")
 demo_scale$sgm <- car::recode(demo_scale$sgm, "3 = 1")
 demo_scale$sgm <- car::recode(demo_scale$sgm, "2 = 1")
 demo_scale$sgm <- as.numeric(demo_scale$sgm)
