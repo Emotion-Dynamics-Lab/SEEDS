@@ -253,7 +253,7 @@ demo_scale$Age_Years <-substr(demo_scale$Age_Years, 1, 8)
 demo_scale$Age_Years <- as.numeric(demo_scale$Age_Years)
 describe(demo_scale$Age_Years)
 
-# Calculate age in years using lubridate. Need to dig in to better understand how this is different from the math above. But one of these approaches should be good to adopt.
+# Calculate age in years using lubridate.
 demo_scale$Age_Years2 <-year(as.period(interval(demo_scale$BirthMonth_Year, demo_scale$StartDate2)))
 
 demo_scale$Age_Years2 <- car::recode(demo_scale$Age_Years2, "'4' = 18")
