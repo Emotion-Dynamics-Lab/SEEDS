@@ -30,13 +30,13 @@ library(lubridate)
 
 ```
 
-Read in the data (Will need to change this to Step 0 once Hayleigh finishes the coding):
+Read in the data:
 ```{r}
 #Hayleigh's Mac:
-# df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
 
 # Jess's Mac
- df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+# df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
 ```
 
 Subset the data to just the items from the Demographics Questionnaire and remove rows that have question headers:
@@ -178,7 +178,7 @@ demo_scale$Faculty[demo_scale$Faculty == 8] <- NA
 
 Age math:
 ```{r}
-# TO DO: Refer to Jess's script about date math using data and when they completed the survey. Recode all months to numbers.
+#Option 1:
 
 # Convert entries for BirthMonth to numeric values:
 
@@ -336,15 +336,31 @@ Faculty Question Key:
 
 
 
-ENYA - Participant 633e3bfaffd6a10b33303ef5 responded 'women' to gender question in self describe. Changed to cisgender_woman in proper format to avoid being categorized as GSM, along with other related columns (Participant also reported straight for sexuality)
+Participant 672e088407bba7b95127376e responded 'niether cisgender nor transgender' to gender trajectory question and then "Iam a male" in self describe. Changed both columns to NA
 ```{r}
-df_scale <- within(df_scale, GenderCisgenderWoman[id == '633e3bfaffd6a10b33303ef5'] <- 'cisgender_woman')
-#df_scale <- within(df_scale, GenderIdentity[id == '633e3bfaffd6a10b33303ef5'] <- 'cisgender_woman')
-#df_scale <- within(df_scale, GSM[id == '633e3bfaffd6a10b33303ef5'] <- FALSE)
-df_scale <- within(df_scale, GenderSelfDescribeText[id == '633e3bfaffd6a10b33303ef5'] <- NA)
-df_scale <- within(df_scale, GenderSelfDescribeTF[id == '633e3bfaffd6a10b33303ef5'] <- NA)
+
+demo_scale <- demo_scale %>%
+  mutate(
+    GenderTrajectoryNeitherCisgenderNorTransgenderText = if_else(id == "672e088407bba7b95127376e" & GenderTrajectoryNeitherCisgenderNorTransgenderText == "Iam a male",
+      NA, GenderTrajectoryNeitherCisgenderNorTransgenderText),
+    GenderTrajectory = 
+      if_else(id == "672e088407bba7b95127376e" & GenderTrajectory == "neither_transgender_nor_cisgender",
+      NA, 
+      GenderTrajectory))
+
 ```
 
+Participant 650bbd883de9e376c0d0d7cd responded 'niether cisgender nor transgender' to gender trajectory question and then "Straight" in self describe. Changed both columns to NA
+```{r}
+demo_scale <- demo_scale %>%
+  mutate(
+    GenderTrajectoryNeitherCisgenderNorTransgenderText = if_else(id == "650bbd883de9e376c0d0d7cd" & GenderTrajectoryNeitherCisgenderNorTransgenderText == "Straight",
+      NA, GenderTrajectoryNeitherCisgenderNorTransgenderText),
+    GenderTrajectory = 
+      if_else(id == "650bbd883de9e376c0d0d7cd" & GenderTrajectory == "neither_transgender_nor_cisgender",
+      NA, 
+      GenderTrajectory))
+```
 
 
 Concatenate into single column for each multiple response option question:
