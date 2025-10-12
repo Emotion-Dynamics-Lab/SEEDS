@@ -384,20 +384,7 @@ demo_scale <- demo_scale %>%
 
 ```
 
-Make column for GSM variable (Option 1):
-```{r}
-demo_scale <- demo_scale %>%
-  add_column(GSM = if_else(.$GenderSelfDescribeText %in% "woman" | "man" &
-                             .$GenderTrajectory %in% "cisgender" &
-                             .$GenderBinaryRelation %in% "binary" &
-                             .$SexualOrientation %in% "straight/heterosexual", FALSE, TRUE), .after = "id")
-
-#See how many GSM participants (shows count of # of TRUE values in column)
-sum(demo_scale$GSM)
-
-```
-
-Option 2: Calculate a variable indicating sexual and gender minority status. We want to code everyone who indicated both cisgender, binary, and heterosexual into `0` and everyone else into `1`.
+Calculate a variable indicating sexual and gender minority (SGM) status. We want to code everyone who indicated both cisgender, binary, and heterosexual into `0` and everyone else into `1`.
 ```{r}
 # First recode to a gender minority variable. Note that this is using car, not dplyr
 
@@ -422,22 +409,34 @@ demo_scale$sexual_minority <- car::recode(
   demo_scale$SexualOrientation, 
   "'straight/heterosexual' = 0; else = 1")
 
+# --- Ensure all are numeric ---
+demo_scale <- demo_scale %>%
+  mutate(
+    across(
+      c(gender_selfdescribe_minority,
+        gender_trajectory_minority,
+        gender_binary_minority,
+        sexual_minority),
+      as.numeric))
+
+# --- Create Overall Sexual/Gender Minority (SGM) variable ---
+demo_scale$sgm <- pmax(
+  demo_scale$gender_selfdescribe_minority,
+  demo_scale$gender_trajectory_minority,
+  demo_scale$gender_binary_minority,
+  demo_scale$sexual_minority,
+  na.rm = TRUE
+)
                   
+# Make sure all NA rows (if all 4 inputs are NA) stay NA
+demo_scale$sgm[is.na(demo_scale$gender_selfdescribe_minority) &
+               is.na(demo_scale$gender_trajectory_minority) &
+               is.na(demo_scale$gender_binary_minority) &
+               is.na(demo_scale$sexual_minority)] <- NA
 
-# Now create a new variable that sums these three minority variables
-demo_scale$gender_trajectory_minority <- as.numeric(demo_scale$gender_trajectory_minority)
-demo_scale$gender_binary_minority <- as.numeric(demo_scale$gender_binary_minority)
-demo_scale$sexual_minority <- as.numeric(demo_scale$sexual_minority)
-
-demo_scale$sgm <- demo_scale$gender_trajectory_minority + demo_scale$gender_binary_minority + demo_scale$sexual_minority
-
-# Recode values of 4 = 1 and 3 = 1 and 2 = 1 into this new sgm variable so that 1 =  sexual/gender minority, 0 = not
-demo_scale$sgm <- car::recode(demo_scale$sgm, "4 = 1")
-demo_scale$sgm <- car::recode(demo_scale$sgm, "3 = 1")
-demo_scale$sgm <- car::recode(demo_scale$sgm, "2 = 1")
-demo_scale$sgm <- as.numeric(demo_scale$sgm)
-
+# --- Check distribution ---
 table(demo_scale$sgm, useNA = "ifany")
+
 ```
 
 
@@ -449,10 +448,9 @@ Save cleaned datasets:
 #Write to Hayleigh's Mac:
 write.csv(demo_scale,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SONA W1 Demographics Cleaned Full Part 1.csv')
 
-# Still need to complete...
-#Second dataset with just one column per question plus GSM:
-demo_core <- subset(demo_scale, select = c(id, GSM, GenderIdentity, SexualOrientation, Ethnicity, Age, ParentalEducation, Ladder, InternationalDomesticStudent, UndergradYear, PartOrFullTime, Faculty, GPA))
-write.csv(df_core,'/Volumes/Emotion Dynamics Lab/DREAMS (UGS2)/Data/Part 1/Term 1 Data/Demographics Cleaned Condensed Part 1.csv')
+# Second dataset with just one column per question plus GSM:
+demo_core <- subset(demo_scale, select = c(id, sgm, GenderIdentity, SexualOrientation, Ethnicity, Age_Years, Ladder, InternationalDomesticStudent, UndergradYear, PartOrFullTime, Faculty, GPA))
+write.csv(demo_core,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SONA W1 Demographics Cleaned Short Part 1.csv')
 
 #Write to Jess's Mac: 
 
