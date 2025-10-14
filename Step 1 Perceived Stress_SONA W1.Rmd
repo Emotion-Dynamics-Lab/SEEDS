@@ -125,11 +125,27 @@ Now calculate the T scores. First we need to examine if there are any missing da
 stress_scale.na <- stress_scale[!complete.cases(stress_scale),]
 ```
 
-There are three cases that have missing data to at least one of the questions on this scale. These are cases with the following IDs:
+There are 19 cases that have missing data to at least one of the questions on this scale. These are cases with the following IDs:
 
-* 6174b1438115e70dfc489bc4
-* 60a70c9762536f0df2c2ada2
-* 636d7893b3b0520b40671e55
+* 6727c70607bba7b951fee668
+* 672e5d7107bba7b9512a2bdb
+* 6732891807bba7b9514ae1aa
+* 67324c2e07bba7b951482af2
+* 6732539707bba7b951488555
+* 6732545907bba7b95148929e
+* 6733cefc7037504722affa62
+* 6733cfff7037504722b00579
+* 6733dc3c7037504722b0ae56
+* 6733dccd7037504722b0b288
+* 673503d6645ca7ce4537c0b6
+* 673508f3645ca7ce4537faa3
+* 64e692bf45191ff324ed01d6
+* 67351413645ca7ce453892a6
+* 67351be5645ca7ce4538fc44
+* 673520e8645ca7ce4539380d
+* 6735243c645ca7ce45397fab
+* 672e83f707bba7b9512ba59c
+* 674b7ab3cc103e20a9997d43
 
 Remove unneeded columns, including the ID so it doesn't get used in the mean imputation:
 ```{r}
