@@ -1,7 +1,7 @@
 ---
 title: "Step 1 Perceived Stress_SONA W1"
 author: "Hayleigh Armstrong"
-date: "13/11/2022"
+date: "14/10/2025"
 output:
   html_document:
     number_sections: yes
@@ -41,17 +41,17 @@ head(stress_scale)
 
 Rename the items:
 ```{r}
-colnames(stress_scale)[colnames(stress_scale)=="X.5"] <- "id"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q85.ChoiceTextEntryValue.."] <- "stress_1"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q86.ChoiceTextEntryValue.."] <- "stress_2"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q87.ChoiceTextEntryValue.."] <- "stress_3"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q88.ChoiceTextEntryValue.."] <- "stress_4"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q89.ChoiceTextEntryValue.."] <- "stress_5"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q90.ChoiceTextEntryValue.."] <- "stress_6"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q91.ChoiceTextEntryValue.."] <- "stress_7"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q92.ChoiceTextEntryValue.."] <- "stress_8"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q93.ChoiceTextEntryValue.."] <- "stress_9"
-colnames(stress_scale)[colnames(stress_scale)=="X..Q...Q94.ChoiceTextEntryValue.."] <- "stress_10"
+colnames(stress_scale)[colnames(stress_scale)=="X.7"] <- "id"
+colnames(stress_scale)[colnames(stress_scale)=="X.117"] <- "stress_1"
+colnames(stress_scale)[colnames(stress_scale)=="X.118"] <- "stress_2"
+colnames(stress_scale)[colnames(stress_scale)=="X.119"] <- "stress_3"
+colnames(stress_scale)[colnames(stress_scale)=="X.120"] <- "stress_4"
+colnames(stress_scale)[colnames(stress_scale)=="X.121"] <- "stress_5"
+colnames(stress_scale)[colnames(stress_scale)=="X.122"] <- "stress_6"
+colnames(stress_scale)[colnames(stress_scale)=="X.123"] <- "stress_7"
+colnames(stress_scale)[colnames(stress_scale)=="X.124"] <- "stress_8"
+colnames(stress_scale)[colnames(stress_scale)=="X.125"] <- "stress_9"
+colnames(stress_scale)[colnames(stress_scale)=="X.126"] <- "stress_10"
 ```
 
 Variables are pulled in as factors and we want to make them numeric values:
