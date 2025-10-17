@@ -1,7 +1,7 @@
 ---
-title: "PERMA Profiler"
-author: "Minju Yu - Gizem Keskin is checking and editing on 2024-06-05"
-date: "2022-11-13"
+title: "Step 1 PERMA Profiler_SONA W1"
+author: "Hayleigh"
+date: "2025-16-10"
 output:
   html_document:
     number_sections: yes
@@ -25,48 +25,45 @@ library(reshape2)
 
 Read in the data:
 ```{r}
-#Gizem's PC
-df <- read.csv("P:/VERSUS (UGS3)/Data/Part 1/ExpiWell Data Term 1 Cleaned.csv", na.strings=c("","NA"))
-
-# Minju's PC
-#df <- read.csv("P:\\Emotion Dynamics Lab\\VERSUS (UGS3)\\Data\\Part 1\\ExpiWell Data Term 1 Cleaned.csv", na.strings=c("","NA"))
+#Hayleigh's Mac
+df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
 
 # Jess's Mac
-# df <- read.csv("/Volumes/research/Emotion Dynamics Lab/VERSUS (UGS3)/Data/Part 1/ExpiWell Data Term 1 Cleaned.csv", na.strings=c("","NA"))
+
 ```
 
 Subset the data to just the items from the PERMA Profiler and remove the rows that have question headers:
 ```{r}
-df_scale <- select(df [-c(1,2,3),], X.5, X..Q...Q112.ChoiceTextEntryValue..:X..Q...Q134.ChoiceTextEntryValue..)
-head(df_scale)
+perma_scale <- select(df [-c(1,2,3,4),], X.7, X.128:X.150)
+head(perma_scale)
 ```
 
 Rename the items:
 ```{r}
-colnames(df_scale)[colnames(df_scale)=="X.5"] <- "id"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q112.ChoiceTextEntryValue.."] <- "perma_1"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q113.ChoiceTextEntryValue.."] <- "perma_2"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q114.ChoiceTextEntryValue.."] <- "perma_3"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q115.ChoiceTextEntryValue.."] <- "perma_4"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q116.ChoiceTextEntryValue.."] <- "perma_5"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q117.ChoiceTextEntryValue.."] <- "perma_6"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q118.ChoiceTextEntryValue.."] <- "perma_7"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q119.ChoiceTextEntryValue.."] <- "perma_8"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q120.ChoiceTextEntryValue.."] <- "perma_9"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q121.ChoiceTextEntryValue.."] <- "perma_10"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q122.ChoiceTextEntryValue.."] <- "perma_11"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q123.ChoiceTextEntryValue.."] <- "perma_12"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q124.ChoiceTextEntryValue.."] <- "perma_13"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q125.ChoiceTextEntryValue.."] <- "perma_14"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q126.ChoiceTextEntryValue.."] <- "perma_15"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q127.ChoiceTextEntryValue.."] <- "perma_16"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q128.ChoiceTextEntryValue.."] <- "perma_17"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q129.ChoiceTextEntryValue.."] <- "perma_18"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q130.ChoiceTextEntryValue.."] <- "perma_19"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q131.ChoiceTextEntryValue.."] <- "perma_20"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q132.ChoiceTextEntryValue.."] <- "perma_21"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q133.ChoiceTextEntryValue.."] <- "perma_22"
-colnames(df_scale)[colnames(df_scale)=="X..Q...Q134.ChoiceTextEntryValue.."] <- "perma_23"
+colnames(perma_scale)[colnames(perma_scale)=="X.7"] <- "id"
+colnames(perma_scale)[colnames(perma_scale)=="X.128"] <- "perma_1"
+colnames(perma_scale)[colnames(perma_scale)=="X.129"] <- "perma_2"
+colnames(perma_scale)[colnames(perma_scale)=="X.130"] <- "perma_3"
+colnames(perma_scale)[colnames(perma_scale)=="X.131"] <- "perma_4"
+colnames(perma_scale)[colnames(perma_scale)=="X.132"] <- "perma_5"
+colnames(perma_scale)[colnames(perma_scale)=="X.133"] <- "perma_6"
+colnames(perma_scale)[colnames(perma_scale)=="X.134"] <- "perma_7"
+colnames(perma_scale)[colnames(perma_scale)=="X.135"] <- "perma_8"
+colnames(perma_scale)[colnames(perma_scale)=="X.136"] <- "perma_9"
+colnames(perma_scale)[colnames(perma_scale)=="X.137"] <- "perma_10"
+colnames(perma_scale)[colnames(perma_scale)=="X.138"] <- "perma_11"
+colnames(perma_scale)[colnames(perma_scale)=="X.139"] <- "perma_12"
+colnames(perma_scale)[colnames(perma_scale)=="X.140"] <- "perma_13"
+colnames(perma_scale)[colnames(perma_scale)=="X.141"] <- "perma_14"
+colnames(perma_scale)[colnames(perma_scale)=="X.142"] <- "perma_15"
+colnames(perma_scale)[colnames(perma_scale)=="X.143"] <- "perma_16"
+colnames(perma_scale)[colnames(perma_scale)=="X.144"] <- "perma_17"
+colnames(perma_scale)[colnames(perma_scale)=="X.145"] <- "perma_18"
+colnames(perma_scale)[colnames(perma_scale)=="X.146"] <- "perma_19"
+colnames(perma_scale)[colnames(perma_scale)=="X.147"] <- "perma_20"
+colnames(perma_scale)[colnames(perma_scale)=="X.148"] <- "perma_21"
+colnames(perma_scale)[colnames(perma_scale)=="X.149"] <- "perma_22"
+colnames(perma_scale)[colnames(perma_scale)=="X.150"] <- "perma_23"
 ```
 
 Convert the "prefer not to respond" options to "NA":
