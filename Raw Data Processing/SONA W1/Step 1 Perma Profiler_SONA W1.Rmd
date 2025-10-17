@@ -1,0 +1,299 @@
+---
+title: "Step 1 PERMA Profiler_SONA W1"
+author: "Hayleigh"
+date: "2025-16-10"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+## Preliminary Steps
+
+Load packages:
+```{r, warning = FALSE, message = FALSE}
+library(dplyr)
+library(tidyverse)
+library(Hmisc)
+library(psych)
+library(ggplot2)
+library(ggcorrplot)
+library(reshape2)
+```
+
+Read in the data:
+```{r}
+#Hayleigh's Mac
+df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+# Jess's Mac
+
+```
+
+Subset the data to just the items from the PERMA Profiler and remove the rows that have question headers:
+```{r}
+perma_scale <- select(df [-c(1,2,3,4),], X.7, X.128:X.150)
+head(perma_scale)
+```
+
+Rename the items:
+```{r}
+colnames(perma_scale)[colnames(perma_scale)=="X.7"] <- "id"
+colnames(perma_scale)[colnames(perma_scale)=="X.128"] <- "perma_1"
+colnames(perma_scale)[colnames(perma_scale)=="X.129"] <- "perma_2"
+colnames(perma_scale)[colnames(perma_scale)=="X.130"] <- "perma_3"
+colnames(perma_scale)[colnames(perma_scale)=="X.131"] <- "perma_4"
+colnames(perma_scale)[colnames(perma_scale)=="X.132"] <- "perma_5"
+colnames(perma_scale)[colnames(perma_scale)=="X.133"] <- "perma_6"
+colnames(perma_scale)[colnames(perma_scale)=="X.134"] <- "perma_7"
+colnames(perma_scale)[colnames(perma_scale)=="X.135"] <- "perma_8"
+colnames(perma_scale)[colnames(perma_scale)=="X.136"] <- "perma_9"
+colnames(perma_scale)[colnames(perma_scale)=="X.137"] <- "perma_10"
+colnames(perma_scale)[colnames(perma_scale)=="X.138"] <- "perma_11"
+colnames(perma_scale)[colnames(perma_scale)=="X.139"] <- "perma_12"
+colnames(perma_scale)[colnames(perma_scale)=="X.140"] <- "perma_13"
+colnames(perma_scale)[colnames(perma_scale)=="X.141"] <- "perma_14"
+colnames(perma_scale)[colnames(perma_scale)=="X.142"] <- "perma_15"
+colnames(perma_scale)[colnames(perma_scale)=="X.143"] <- "perma_16"
+colnames(perma_scale)[colnames(perma_scale)=="X.144"] <- "perma_17"
+colnames(perma_scale)[colnames(perma_scale)=="X.145"] <- "perma_18"
+colnames(perma_scale)[colnames(perma_scale)=="X.146"] <- "perma_19"
+colnames(perma_scale)[colnames(perma_scale)=="X.147"] <- "perma_20"
+colnames(perma_scale)[colnames(perma_scale)=="X.148"] <- "perma_21"
+colnames(perma_scale)[colnames(perma_scale)=="X.149"] <- "perma_22"
+colnames(perma_scale)[colnames(perma_scale)=="X.150"] <- "perma_23"
+```
+
+Convert the "prefer not to respond" options to "NA":
+```{r}
+perma_scale[perma_scale == 11] <- NA
+```
+
+Variables are pulled in as factors and we want to make them numeric values: 
+```{r}
+perma_scale[,paste0("perma_",1:23)] <- lapply(perma_scale[,paste0("perma_",1:23)], as.numeric)
+str(perma_scale)
+```
+
+Label the items:
+```{r}
+label(perma_scale[["perma_1"]]) <- "How much of the time do you feel you are making progress towards accomplishing your goals?"
+label(perma_scale[["perma_2"]]) <- "How often do you become absorbed in what you are doing?"
+label(perma_scale[["perma_3"]]) <- "In general, how often do you feel joyful?"
+label(perma_scale[["perma_4"]]) <- "In general, how often do you feel anxious?"
+label(perma_scale[["perma_5"]]) <- "How often do you achieve the important goals you have set for yourself?"
+label(perma_scale[["perma_6"]]) <- "In general, how would you say your health is?"
+label(perma_scale[["perma_7"]]) <- "In general, to what extent do you lead a purposeful and meaningful life?"
+label(perma_scale[["perma_8"]]) <- "To what extent do you receive help and support from others when you need it?"
+label(perma_scale[["perma_9"]]) <- "In general, to what extent do you feel that what you do in your life is valuable and worthwhile?"
+label(perma_scale[["perma_10"]]) <- "In general, to what extent do you feel excited and interested in things?"
+label(perma_scale[["perma_11"]]) <- "How lonely do you feel in your daily life?"
+label(perma_scale[["perma_12"]]) <- "How satisfied are you with your current physical health?"
+label(perma_scale[["perma_13"]]) <- "In general, how often do you feel positive?"
+label(perma_scale[["perma_14"]]) <- "In general, how often do you feel angry?"
+label(perma_scale[["perma_15"]]) <- "How often are you able to handle your responsibilities?"
+label(perma_scale[["perma_16"]]) <- "In general, how often do you feel sad?"
+label(perma_scale[["perma_17"]]) <- "How often do you lose track of time while doing something you enjoy?"
+label(perma_scale[["perma_18"]]) <- "Compared to others of your same age and sex, how is your health?"
+label(perma_scale[["perma_19"]]) <- "To what extent do you feel loved?"
+label(perma_scale[["perma_20"]]) <- "To what extent do you generally feel you have a sense of direction in your life?"
+label(perma_scale[["perma_21"]]) <- "How satisfied are you with your personal relationships?"
+label(perma_scale[["perma_22"]]) <- "In general, to what extent do you feel contented?"
+label(perma_scale[["perma_23"]]) <- "Taking all things together, how happy would you say you are?"
+
+# Look at the data
+head(perma_scale)
+```
+
+## Calculate the scales
+
+### Calculate the standard mean and sum of subscales
+
+Calculate the mean scores of PERMA Profiler and Subscales, in line with the instructions described in the [instruction manual](https://www.peggykern.org/uploads/5/6/6/7/56678211/the_PERMA-profiler_101416.pdf).
+
+Positive Emotion subscale:
+```{r}
+perma_scale <- mutate (perma_scale, perma_positive_sum = perma_3 + perma_13 + perma_22)
+perma_scale$perma_positive_mean <- apply(perma_scale[, c("perma_3", "perma_13", "perma_22")], 1, mean)
+
+label(perma_scale[["perma_positive_sum"]]) <- "sum of PERMA positive emotion items"
+label(perma_scale[["perma_positive_mean"]]) <- "mean of PERMA positive emotion items"
+```
+
+Engagement subscale:
+```{r}
+perma_scale <- mutate (perma_scale, perma_engagement_sum = perma_2 + perma_10 + perma_17)
+perma_scale$perma_engagement_mean <- apply(perma_scale[, c("perma_2", "perma_10", "perma_17")], 1, mean)
+
+label(perma_scale[["perma_engagement_sum"]]) <- "sum of PERMA engagement items"
+label(perma_scale[["perma_engagement_mean"]]) <- "mean of PERMA engagement items"
+```
+
+Relationships subscale:
+```{r}
+perma_scale <- mutate (perma_scale, perma_relationships_sum = perma_8 + perma_19 + perma_21)
+perma_scale$perma_relationships_mean <- apply(perma_scale[, c("perma_8", "perma_19", "perma_21")], 1, mean)
+
+label(perma_scale[["perma_relationships_sum"]]) <- "sum of PERMA relationships items"
+label(perma_scale[["perma_relationships_mean"]]) <- "mean of PERMA relationships items"
+```
+
+Meaning subscale:
+```{r}
+perma_scale <- mutate (perma_scale, perma_meaning_sum = perma_7 + perma_9 + perma_20)
+perma_scale$perma_meaning_mean <- apply(perma_scale[, c("perma_7", "perma_9", "perma_20")], 1, mean)
+
+label(perma_scale[["perma_meaning_sum"]]) <- "sum of PERMA meaning items"
+label(perma_scale[["perma_meaning_mean"]]) <- "mean of PERMA meaning items"
+```
+
+Accomplishment subscale:
+```{r}
+perma_scale <- mutate (perma_scale, perma_accomplishment_sum = perma_1 + perma_5 + perma_15)
+perma_scale$perma_accomplishment_mean <- apply(perma_scale[, c("perma_1", "perma_5", "perma_15")], 1, mean)
+
+label(perma_scale[["perma_accomplishment_sum"]]) <- "sum of PERMA accomplishment items"
+label(perma_scale[["perma_accomplishment_mean"]]) <- "mean of PERMA accomplishment items"
+```
+
+Overall well-being subscale:
+```{r}
+perma_scale <- mutate (perma_scale, perma_wellbeing_sum = perma_3 + perma_13 + perma_22 + perma_2 + perma_10 + perma_17 + perma_8 + perma_19 + perma_21 + perma_7 + perma_9 + perma_20 + perma_1 + perma_5 + perma_15 + perma_23)
+perma_scale$perma_wellbeing_mean <- apply(perma_scale[, c("perma_3", "perma_13", "perma_22", "perma_2", "perma_10", "perma_17", "perma_8", "perma_19", "perma_21", "perma_7", "perma_9", "perma_20", "perma_1", "perma_5", "perma_15", "perma_23")], 1, mean)
+
+label(perma_scale[["perma_wellbeing_sum"]]) <- "sum of PERMA overall wellbeing items"
+label(perma_scale[["perma_wellbeing_mean"]]) <- "mean of PERMA overall wellbeing items"
+```
+
+Negative Emotion subscale:
+```{r}
+perma_scale <- mutate (perma_scale, perma_negative_sum = perma_4 + perma_14 + perma_16)
+perma_scale$perma_negative_mean <- apply(perma_scale[, c("perma_4", "perma_14", "perma_16")], 1, mean)
+
+label(perma_scale[["perma_negative_sum"]]) <- "sum of PERMA negative emotion items"
+label(perma_scale[["perma_negative_mean"]]) <- "mean of PERMA negative emotion items"
+```
+
+Health subscale:
+```{r}
+perma_scale <- mutate (perma_scale, perma_health_sum = perma_6 + perma_12 + perma_18)
+perma_scale$perma_health_mean <- apply(perma_scale[, c("perma_6", "perma_12", "perma_18")], 1, mean)
+
+label(perma_scale[["perma_health_sum"]]) <- "sum of PERMA health items"
+label(perma_scale[["perma_health_mean"]]) <- "mean of PERMA health items"
+```
+
+Loneliness subscale (single item):
+```{r}
+perma_scale <- mutate (perma_scale, perma_loneliness_sum = perma_11)
+perma_scale$perma_loneliness_mean <- perma_scale[, c("perma_11")]
+
+label(perma_scale[["perma_loneliness_sum"]]) <- "sum of PERMA loneliness items"
+label(perma_scale[["perma_loneliness_mean"]]) <- "mean of PERMA loneliness items"
+```
+
+
+Save the data file:
+```{r, eval = FALSE}
+# Write to Hayleigh's Mac:
+write.csv(perma_scale,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/PERMA Profiler-Step1_SONA_W1.csv')
+
+# Jess's Mac
+
+```
+
+## Reliability of subscales and the total scale 
+
+Reliability of positive emotions
+```{r}
+positive <- subset(perma_scale, select = c("perma_3","perma_13","perma_22"))
+psych::alpha(positive)
+```
+
+Reliability of engagement
+```{r}
+engagement <- subset(perma_scale, select = c("perma_2","perma_10","perma_17"))
+psych::alpha(engagement)
+```
+
+Reliability of relationships
+```{r}
+relationships <- subset(perma_scale, select = c("perma_8","perma_19","perma_21"))
+psych::alpha(relationships)
+```
+
+Reliability of meaning
+```{r}
+meaning <- subset(perma_scale, select = c("perma_7","perma_9","perma_20"))
+psych::alpha(meaning)
+```
+
+Reliability of accomplishment
+```{r}
+accomplishment <- subset(perma_scale, select = c("perma_1","perma_5","perma_15"))
+psych::alpha(accomplishment)
+```
+
+Reliability of overall well-being
+```{r}
+wellbeing <- subset(perma_scale, select = c("perma_3","perma_13","perma_22", "perma_2","perma_10","perma_17","perma_8","perma_19","perma_21","perma_7", "perma_9","perma_20","perma_1","perma_5","perma_15","perma_23"))
+psych::alpha(wellbeing)
+```
+
+Reliability of negative emotion
+```{r}
+negative <- subset(perma_scale, select = c("perma_4","perma_14","perma_16"))
+psych::alpha(negative)
+```
+
+Reliability of health
+```{r}
+health <- subset(perma_scale, select = c("perma_6","perma_12","perma_18"))
+psych::alpha(health)
+```
+
+No calculation of reliability for Loneliness, which consists of a single item.
+
+## Examine the data
+
+Create a new object containing only the subscales (not also the individual items):
+```{r}
+df <- subset(perma_scale, select = c("perma_positive_mean",
+                                  "perma_engagement_mean",
+                                  "perma_relationships_mean",
+                                  "perma_meaning_mean",
+                                  "perma_accomplishment_mean",
+                                  "perma_wellbeing_mean",
+                                  "perma_negative_mean",
+                                  "perma_health_mean",
+                                  "perma_loneliness_mean"))
+```
+
+Get descriptive statistics for each scale:
+```{r}
+describe(df)
+```
+
+Plot histograms of each scale:
+```{r}
+# melt the data
+df_m <- melt(df)
+
+g <- ggplot(df_m,aes(x=value))
+g <- g + geom_histogram()
+g <- g + facet_wrap(~variable)
+g
+```
+
+Create a matrix of scatter plots:
+```{r}
+pairs(~perma_positive_mean + perma_engagement_mean + perma_relationships_mean + perma_meaning_mean + perma_accomplishment_mean + perma_wellbeing_mean + perma_negative_mean + perma_health_mean + perma_loneliness_mean, data=df, main="Scatterplot Matrix of PERMA Profiler Subscales")
+```
+
+Compute a correlation matrix and then visualize it, using steps from [this site](http://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2).
+```{r}
+res <-cor(df, use = "complete.obs")
+ggcorrplot(res, lab = TRUE)
+```
