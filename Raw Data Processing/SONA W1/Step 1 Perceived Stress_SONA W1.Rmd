@@ -90,12 +90,15 @@ stress_scale$stress_10[stress_scale$stress_10 == 6] <- NA
 
 ```
 
-Re-code the four items (Items 4, 5, 7, 8) that were reverse scored wonky:
 ```{r}
-stress_scale$stress_4 <- stress_scale$stress_4 - 1
-stress_scale$stress_5 <- stress_scale$stress_5 - 1
-stress_scale$stress_7 <- stress_scale$stress_7 - 1
-stress_scale$stress_8 <- stress_scale$stress_8 - 1
+# Reverse code items 4, 5, 7, and 8
+stress_scale <- stress_scale %>%
+  mutate(
+    stress_4 = 6 - stress_4,
+    stress_5 = 6 - stress_5,
+    stress_7 = 6 - stress_7,
+    stress_8 = 6 - stress_8
+  )
 
 ```
 
@@ -143,6 +146,22 @@ There are 19 cases that have missing data to at least one of the questions on th
 * 6735243c645ca7ce45397fab
 * 672e83f707bba7b9512ba59c
 * 674b7ab3cc103e20a9997d43
+
+## Investigating missing data
+```{r}
+
+missing_summary <- stress_scale %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(cols = everything(),
+               names_to = "variable",
+               values_to = "n_missing") %>%
+  mutate(pct_missing = round((n_missing / nrow(stress_scale)) * 100, 2)) %>%
+  filter(n_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+missing_summary
+```
+
 
 Remove unneeded columns, including the ID so it doesn't get used in the mean imputation:
 ```{r}
