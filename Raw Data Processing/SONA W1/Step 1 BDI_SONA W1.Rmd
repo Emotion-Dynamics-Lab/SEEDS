@@ -82,6 +82,23 @@ Variables are pulled in as factors and we want to make them numeric values:
 df_scale[,paste0("bdi_",1:20)] <- lapply(df_scale[,paste0("bdi_",1:20)], as.numeric)
 str(df_scale)
 ```
+## Investigating missing data
+```{r}
+
+missing_summary <- df_scale %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(cols = everything(),
+               names_to = "variable",
+               values_to = "n_missing") %>%
+  mutate(pct_missing = round((n_missing / nrow(df_scale)) * 100, 2)) %>%
+  filter(n_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+missing_summary
+
+
+
+```
 
 ## Calculate the scales
 
