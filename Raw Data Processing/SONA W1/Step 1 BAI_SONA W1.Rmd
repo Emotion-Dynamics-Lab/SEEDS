@@ -78,6 +78,20 @@ df_scale[,paste0("bai_",1:21)] <- lapply(df_scale[,paste0("bai_",1:21)], as.nume
 str(df_scale)
 ```
 
+## Investigating missing data
+```{r}
+missing_summary <- df_scale %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(cols = everything(),
+               names_to = "variable",
+               values_to = "n_missing") %>%
+  mutate(pct_missing = round((n_missing / nrow(df_scale)) * 100, 2)) %>%
+  filter(n_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+missing_summary
+```
+
 ## Calculate the scale
 
 ### Calculate the standard mean and sum
