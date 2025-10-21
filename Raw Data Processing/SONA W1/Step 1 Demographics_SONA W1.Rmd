@@ -218,7 +218,7 @@ demo_scale <- demo_scale %>%
     BirthYear = ifelse(BirthYear > 2006, NA, BirthYear)   # remove unrealistic years - 3 people who entered birth date as 2021 or 2022 - exclude them 
   )
 
-table(demo_scale$BirthYear) # check to make sure. JL note: looks like some year entries need to be hand-corrected
+table(demo_scale$BirthYear) # check to make sure. 
 
 # Concatenate month and year data:
 demo_scale$BirthMonth_Year <- paste(demo_scale$BirthYear, "-", demo_scale$BirthMonth)
