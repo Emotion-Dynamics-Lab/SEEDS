@@ -71,6 +71,20 @@ Convert the "prefer not to respond" options to "NA":
 perma_scale[perma_scale == 11] <- NA
 ```
 
+Summarize the missing data
+```{r}
+missing_summary <- perma_scale %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(cols = everything(),
+               names_to = "variable",
+               values_to = "n_missing") %>%
+  mutate(pct_missing = round((n_missing / nrow(perma_scale)) * 100, 2)) %>%
+  filter(n_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+missing_summary
+```
+
 Variables are pulled in as factors and we want to make them numeric values: 
 ```{r}
 perma_scale[,paste0("perma_",1:23)] <- lapply(perma_scale[,paste0("perma_",1:23)], as.numeric)
@@ -110,6 +124,7 @@ head(perma_scale)
 ## Calculate the scales
 
 ### Calculate the standard mean and sum of subscales
+#### If any of the necessary items are NA, the resulting mean and sum will be NA as well.
 
 Calculate the mean scores of PERMA Profiler and Subscales, in line with the instructions described in the [instruction manual](https://www.peggykern.org/uploads/5/6/6/7/56678211/the_PERMA-profiler_101416.pdf).
 
