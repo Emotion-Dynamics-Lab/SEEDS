@@ -154,6 +154,7 @@ label(tas_scale$tas_ext_think_mean) <- "mean of externally-oriented thinking ite
 ```
 
 ### Look at missing data - impute means for missing values
+## Edit it so data is only imputed for Ps who responded to at least 50% of the items
 ```{r}
 
 missing_summary <- tas_scale %>%
@@ -212,16 +213,16 @@ tas_scale2 <- tas_scale[ ! tas_scale$id %in% id.list, ]
 
 Now add the newly-imputed cases back into the main data frame:
 ```{r}
-# Create columns in stress_scale that we will merge the mean-imputed data into
-tas_scale2$tas_sum_MI <-tas_scale2$stress_sum
-tas_scale2$tas_mean_MI <-tas_scale2$stress_mean
+# Create columns in tas_scale that we will merge the mean-imputed data into
+tas_scale2$tas_sum_MI <-tas_scale2$tas_sum
+tas_scale2$tas_mean_MI <-tas_scale2$tas_mean
 
-# Create empty columns in stress_scale.na for the conventional mean and sum (not MI)
+# Create empty columns in tas_scale.na for the conventional mean and sum (not MI)
 tas_scale.na$tas_sum <-NA
 tas_scale.na$tas_mean <-NA
 
 # Order the columns to be consistent for merge
-col_order <- c("id", "tas_1", "tas_2", "tas_3", "tas_4", "tas_5", "tas_6", "tas_7", "tas_8", "tas_9", "tas_10","tas_11","tas_12", "tas_13","tas_14","tas_15", "tas_16", "tas_17", "tas_18", "tas_19","tas_20","tas_sum",  "tas_mean", "tas_sum_MI",  "tas_mean_MI")
+col_order <- c("id", "tas_1", "tas_2", "tas_3", "tas_4", "tas_5", "tas_6", "tas_7", "tas_8", "tas_9", "tas_10","tas_11","tas_12", "tas_13","tas_14","tas_15", "tas_16", "tas_17", "tas_18", "tas_19","tas_20","tas_sum",  "tas_mean", "tas_sum_MI",  "tas_mean_MI", "tas_diff_id_sum", "tas_diff_id_mean", "tas_diff_describ_sum", "tas_diff_describ_mean", "tas_ext_think_sum", "tas_ext_think_mean")
 
 tas_scale2 <- tas_scale2[, col_order]
 tas_scale.na <- tas_scale.na[, col_order]
@@ -231,57 +232,15 @@ tas_scale3 <- rbind(tas_scale2, tas_scale.na)
 
 ```
 
-
-Now use [the documentation](https://nihtoolbox.my.salesforce.com/sfc/p/#2E000001H4ee/a/2E000000Ub7C/9UzNbxkwc9khhqKaYkXmAYUVZaniThvUkA16Ddkp6eY) to re-code the sums into T scores (see page 27):
-
-```{r}
-describe(stress_scale3$stress_sum)
-
-# The minimum sum score is 19 and the maximum is 50, so we will only recode that range of values from the table in the documentation.
-
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==19] <- 42.0
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==20] <- 43.7
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==21] <- 45.3
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==22] <- 46.9
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==23] <- 48.4
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==24] <- 49.9
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==25] <- 51.5
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==26] <- 53
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==27] <- 54.5
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==28] <- 56.1
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==29] <- 57.5
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==30] <- 59
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==31] <- 60.5
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==32] <- 61.9
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==33] <- 63.4
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==34] <- 64.8
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==35] <- 66.2
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==36] <- 67.6
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==37] <- 69
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==38] <- 70.4
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==39] <- 71.8
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==40] <- 73.1
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==41] <- 74.5
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==42] <- 75.9
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==43] <- 77.4
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==44] <- 78.9
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==45] <- 80.4
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==46] <- 81.9
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==47] <- 83.4
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==48] <- 84.8
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==49] <- 86.0
-stress_scale3$stress_T[stress_scale3$stress_sum_MI==50] <- 87.1
-
-
-```
 Participant 6727c70607bba7b951fee668 did not respond to any of the items. Recode their responses to be NA instead of NaN.
 ```{r}
 
-stress_scale3 <- stress_scale3 %>%
-  mutate(across(stress_1:stress_10,
+tas_scale3 <- tas_scale3 %>%
+  mutate(across(tas_1:tas_20,
                 ~ ifelse(id == "6727c70607bba7b951fee668", NA, .)))
 
 ```
+
 
 Save the data file:
 ```{r, eval = FALSE}
@@ -293,28 +252,27 @@ write.csv(stress_scale3,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SE
 
 ```
 
-## Examine the Data
+## Examine the Data # Need to add reliability analyses for individual subscales
 
 ### Reliability
 
 ```{r, warning = FALSE}
-items <- c("stress_1",  "stress_2", "stress_3", "stress_4", "stress_5", "stress_6", "stress_7", "stress_8", "stress_9", "stress_10")
+items <- c("tas_1", "tas_2", "tas_3", "tas_4", "tas_5", "tas_6", "tas_7", "tas_8", "tas_9", "tas_10", "tas_11","tas_12","tas_13","tas_14","tas_15","tas_16","tas_17","tas_18","tas_19","tas_20")
 
-alpha(stress_scale3[,items])
+alpha(tas_scale3[,items])
 ```
 
 ### Descriptive statistics
 ```{r}
-describe(stress_scale3$stress_sum_MI)
-describe(stress_scale3$stress_mean_MI)
-describe(stress_scale3$stress_T)
+describe(tas_scale3$tas_sum_MI)
+describe(tas_scale3$tas_mean_MI)
 ```
 
 ### Histograms
 
 ```{r, message = FALSE, warning = FALSE}
-qplot(stress_scale3$stress_mean_MI, geom="histogram") 
+qplot(tas_scale3$tas_sum_MI, geom="histogram") 
 
-qplot(stress_scale3$stress_T, geom="histogram")
+qplot(tas_scale3$tas_mean_MI, geom="histogram")
 ```
 
