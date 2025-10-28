@@ -110,9 +110,24 @@ tas_scale <- tas_scale %>%
 
 ## Calculate the scale
 
+### Look at missing data - impute means for missing values
+```{r}
+
+missing_summary <- tas_scale %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(cols = everything(),
+               names_to = "variable",
+               values_to = "n_missing") %>%
+  mutate(pct_missing = round((n_missing / nrow(tas_scale)) * 100, 2)) %>%
+  filter(n_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+missing_summary
+```
+
 ### Calculate standard means and sums
 
-See procedures listed in the [scoring document](https://nihtoolbox.my.salesforce.com/sfc/p/#2E000001H4ee/a/2E000000Ub7C/9UzNbxkwc9khhqKaYkXmAYUVZaniThvUkA16Ddkp6eY) for calculating T scores from the sums.
+Calculate the sum scores of Toronto Alexthymia Scale and Subscales, in line with the instructions described in (https://contextualscience.org/toronto_alexithymia_scale_tas20)
 
 First, calculate the sum and the mean scores:
 ```{r}
@@ -153,60 +168,6 @@ label(tas_scale$tas_ext_think_mean) <- "mean of externally-oriented thinking ite
 
 ```
 
-### Calculate the T scores
-
-Now calculate the T scores. First we need to examine if there are any missing data. Create an object containing only rows of data that include missing data:
-```{r}
-stress_scale.na <- stress_scale[!complete.cases(stress_scale),]
-```
-
-There are 19 cases that have missing data to at least one of the questions on this scale. These are cases with the following IDs:
-
-* 6727c70607bba7b951fee668
-* 672e5d7107bba7b9512a2bdb
-* 6732891807bba7b9514ae1aa
-* 67324c2e07bba7b951482af2
-* 6732539707bba7b951488555
-* 6732545907bba7b95148929e
-* 6733cefc7037504722affa62
-* 6733cfff7037504722b00579
-* 6733dc3c7037504722b0ae56
-* 6733dccd7037504722b0b288
-* 673503d6645ca7ce4537c0b6
-* 673508f3645ca7ce4537faa3
-* 64e692bf45191ff324ed01d6
-* 67351413645ca7ce453892a6
-* 67351be5645ca7ce4538fc44
-* 673520e8645ca7ce4539380d
-* 6735243c645ca7ce45397fab
-* 672e83f707bba7b9512ba59c
-* 674b7ab3cc103e20a9997d43
-
-## Investigating missing data
-```{r}
-
-missing_summary <- tas_scale %>%
-  summarise(across(everything(), ~ sum(is.na(.)))) %>%
-  pivot_longer(cols = everything(),
-               names_to = "variable",
-               values_to = "n_missing") %>%
-  mutate(pct_missing = round((n_missing / nrow(tas_scale)) * 100, 2)) %>%
-  filter(n_missing > 0) %>%
-  arrange(desc(pct_missing))
-
-missing_summary
-```
-
-
-Remove unneeded columns, including the ID so it doesn't get used in the mean imputation:
-```{r}
-# First, pull out the ID column:
-id.list <- stress_scale.na$id
-
-# Now remove the columns we don't want to be part of the mean imputation 
-stress_scale.na <- subset(stress_scale.na, select= -c(id, stress_sum, stress_mean))
-
-```
 
 Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
 ```{r}
