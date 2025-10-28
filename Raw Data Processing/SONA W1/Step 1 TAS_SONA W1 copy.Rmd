@@ -117,11 +117,11 @@ See procedures listed in the [scoring document](https://nihtoolbox.my.salesforce
 First, calculate the sum and the mean scores:
 ```{r}
 
-stress_scale$stress_sum <- apply(stress_scale[,paste0("stress_",1:10)], 1, sum)
-stress_scale$stress_mean <- apply(stress_scale[,paste0("stress_",1:10)], 1, mean)
+tas_scale$tas_sum <- apply(tas_scale[,paste0("tas_",1:20)], 1, sum)
+tas_scale$tas_mean <- apply(tas_scale[,paste0("tas_",1:20)], 1, mean)
 
-label(stress_scale[["stress_sum"]]) <- "sum of stress items"
-label(stress_scale[["stress_mean"]]) <- "mean of stress items"
+label(tas_scale$tas_sum) <- "sum of tas items"
+label(tas_scale$tas_mean) <- "mean of tas items"
 ```
 
 ### Calculate the T scores
@@ -156,12 +156,12 @@ There are 19 cases that have missing data to at least one of the questions on th
 ## Investigating missing data
 ```{r}
 
-missing_summary <- stress_scale %>%
+missing_summary <- tas_scale %>%
   summarise(across(everything(), ~ sum(is.na(.)))) %>%
   pivot_longer(cols = everything(),
                names_to = "variable",
                values_to = "n_missing") %>%
-  mutate(pct_missing = round((n_missing / nrow(stress_scale)) * 100, 2)) %>%
+  mutate(pct_missing = round((n_missing / nrow(tas_scale)) * 100, 2)) %>%
   filter(n_missing > 0) %>%
   arrange(desc(pct_missing))
 
