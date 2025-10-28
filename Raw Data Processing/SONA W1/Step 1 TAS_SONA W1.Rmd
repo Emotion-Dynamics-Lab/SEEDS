@@ -110,21 +110,6 @@ tas_scale <- tas_scale %>%
 
 ## Calculate the scale
 
-### Look at missing data - impute means for missing values
-```{r}
-
-missing_summary <- tas_scale %>%
-  summarise(across(everything(), ~ sum(is.na(.)))) %>%
-  pivot_longer(cols = everything(),
-               names_to = "variable",
-               values_to = "n_missing") %>%
-  mutate(pct_missing = round((n_missing / nrow(tas_scale)) * 100, 2)) %>%
-  filter(n_missing > 0) %>%
-  arrange(desc(pct_missing))
-
-missing_summary
-```
-
 ### Calculate standard means and sums
 
 Calculate the sum scores of Toronto Alexthymia Scale and Subscales, in line with the instructions described in (https://contextualscience.org/toronto_alexithymia_scale_tas20)
@@ -168,56 +153,81 @@ label(tas_scale$tas_ext_think_mean) <- "mean of externally-oriented thinking ite
 
 ```
 
+### Look at missing data - impute means for missing values
+```{r}
+
+missing_summary <- tas_scale %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(cols = everything(),
+               names_to = "variable",
+               values_to = "n_missing") %>%
+  mutate(pct_missing = round((n_missing / nrow(tas_scale)) * 100, 2)) %>%
+  filter(n_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+missing_summary
+```
+Remove unneeded columns, including the ID so it doesn't get used in the mean imputation:
+```{r}
+# First, pull out the ID column:
+tas_scale.na <- tas_scale
+id.list <- tas_scale.na$id
+
+# Now remove the columns we don't want to be part of the mean imputation 
+tas_scale.na <- subset(tas_scale.na, select= -c(id, tas_sum, tas_mean))
+
+```
+
 
 Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
 ```{r}
-for(i in 1:nrow(stress_scale.na)) {
-  stress_scale.na[i, ][is.na(stress_scale.na[i, ])] <- mean(as.numeric(stress_scale.na[i, ]), na.rm = TRUE)
+for(i in 1:nrow(tas_scale.na)) {
+  tas_scale.na[i, ][is.na(tas_scale.na[i, ])] <- mean(as.numeric(tas_scale.na[i, ]), na.rm = TRUE)
 }
 ```
 
 Round the values back to whole numbers:
 ```{r}
-stress_scale.na <- round(stress_scale.na, digits=0)
+tas_scale.na <- round(tas_scale.na, digits=0)
 ```
 
 Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
 ```{r}
-stress_scale.na$stress_sum_MI <- apply(stress_scale.na[,paste0("stress_",1:10)], 1, sum)
-stress_scale.na$stress_mean_MI <- apply(stress_scale.na[,paste0("stress_",1:10)], 1, mean)
+tas_scale.na$tas_sum_MI <- apply(tas_scale.na[,paste0("tas_",1:20)], 1, sum)
+tas_scale.na$tas_mean_MI <- apply(tas_scale.na[,paste0("tas_",1:20)], 1, mean)
 
 ```
 
 Put the IDs back into the data frame:
 ```{r}
-stress_scale.na$id <- id.list
+tas_scale.na$id <- id.list
 
 ```
 
 Now we need to merge the imputed cases back into the main data frame. We don't want to end up with duplicate rows of data for the cases that had missing values, so first we will remove these cases from the original data frame:
 ```{r}
-stress_scale2 <- stress_scale[ ! stress_scale$id %in% id.list, ]
+tas_scale2 <- tas_scale[ ! tas_scale$id %in% id.list, ]
 
 ```
 
 Now add the newly-imputed cases back into the main data frame:
 ```{r}
 # Create columns in stress_scale that we will merge the mean-imputed data into
-stress_scale2$stress_sum_MI <-stress_scale2$stress_sum
-stress_scale2$stress_mean_MI <-stress_scale2$stress_mean
+tas_scale2$tas_sum_MI <-tas_scale2$stress_sum
+tas_scale2$tas_mean_MI <-tas_scale2$stress_mean
 
 # Create empty columns in stress_scale.na for the conventional mean and sum (not MI)
-stress_scale.na$stress_sum <-NA
-stress_scale.na$stress_mean <-NA
+tas_scale.na$tas_sum <-NA
+tas_scale.na$tas_mean <-NA
 
 # Order the columns to be consistent for merge
-col_order <- c("id", "stress_1", "stress_2", "stress_3", "stress_4", "stress_5", "stress_6", "stress_7", "stress_8", "stress_9", "stress_10","stress_sum",  "stress_mean", "stress_sum_MI",  "stress_mean_MI")
+col_order <- c("id", "tas_1", "tas_2", "tas_3", "tas_4", "tas_5", "tas_6", "tas_7", "tas_8", "tas_9", "tas_10","tas_11","tas_12", "tas_13","tas_14","tas_15", "tas_16", "tas_17", "tas_18", "tas_19","tas_20","tas_sum",  "tas_mean", "tas_sum_MI",  "tas_mean_MI")
 
-stress_scale2 <- stress_scale2[, col_order]
-stress_scale.na <- stress_scale.na[, col_order]
+tas_scale2 <- tas_scale2[, col_order]
+tas_scale.na <- tas_scale.na[, col_order]
 
 # Merge the imputed cases back into stress_scale
-stress_scale3 <- rbind(stress_scale2, stress_scale.na)
+tas_scale3 <- rbind(tas_scale2, tas_scale.na)
 
 ```
 
