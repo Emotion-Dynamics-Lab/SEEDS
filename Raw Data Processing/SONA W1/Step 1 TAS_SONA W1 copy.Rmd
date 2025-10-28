@@ -1,0 +1,324 @@
+---
+title: "Step 1 TAS_SONA W1"
+author: "Hayleigh Armstrong"
+date: "28/10/2025"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+## Preliminary Steps
+
+Load packages:
+```{r, warning = FALSE, message = FALSE, include = FALSE}
+library(dplyr)
+library(tidyverse)
+library(Hmisc)
+library(psych)
+library(ggplot2)
+library(ggcorrplot)
+library(reshape2)
+```
+
+Read in the data:
+```{r}
+# Hayleigh's Mac:
+df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+```
+
+Subset the data to just the items from the Toronto Alexthymia Scale questionnaire and remove rows that have question headers:
+```{r}
+tas_scale <- select(df [-c(1,2,3,4),], X.7, X.152:X.171)
+head(tas_scale)
+```
+
+Rename the items:
+```{r}
+colnames(tas_scale)[colnames(tas_scale)=="X.7"] <- "id"
+colnames(tas_scale)[colnames(tas_scale)=="X.152"] <- "tas_1"
+colnames(tas_scale)[colnames(tas_scale)=="X.153"] <- "tas_2"
+colnames(tas_scale)[colnames(tas_scale)=="X.154"] <- "tas_3"
+colnames(tas_scale)[colnames(tas_scale)=="X.155"] <- "tas_4"
+colnames(tas_scale)[colnames(tas_scale)=="X.156"] <- "tas_5"
+colnames(tas_scale)[colnames(tas_scale)=="X.157"] <- "tas_6"
+colnames(tas_scale)[colnames(tas_scale)=="X.158"] <- "tas_7"
+colnames(tas_scale)[colnames(tas_scale)=="X.159"] <- "tas_8"
+colnames(tas_scale)[colnames(tas_scale)=="X.160"] <- "tas_9"
+colnames(tas_scale)[colnames(tas_scale)=="X.161"] <- "tas_10"
+colnames(tas_scale)[colnames(tas_scale)=="X.162"] <- "tas_11"
+colnames(tas_scale)[colnames(tas_scale)=="X.163"] <- "tas_12"
+colnames(tas_scale)[colnames(tas_scale)=="X.164"] <- "tas_13"
+colnames(tas_scale)[colnames(tas_scale)=="X.165"] <- "tas_14"
+colnames(tas_scale)[colnames(tas_scale)=="X.166"] <- "tas_15"
+colnames(tas_scale)[colnames(tas_scale)=="X.167"] <- "tas_16"
+colnames(tas_scale)[colnames(tas_scale)=="X.168"] <- "tas_17"
+colnames(tas_scale)[colnames(tas_scale)=="X.169"] <- "tas_18"
+colnames(tas_scale)[colnames(tas_scale)=="X.170"] <- "tas_19"
+colnames(tas_scale)[colnames(tas_scale)=="X.171"] <- "tas_20"
+```
+
+Variables are pulled in as factors and we want to make them numeric values:
+```{r}
+stress_scale[,paste0("stress_",1:10)] <- lapply(stress_scale[,paste0("stress_",1:10)], as.numeric)
+str(stress_scale)
+```
+
+Label the items:
+```{r}
+label(stress_scale[["stress_1"]]) <- "How often have you been upset because of something that happened unexpectedly?"
+label(stress_scale[["stress_2"]]) <- "How often have you felt that you were unable to control the important things in your life?"
+label(stress_scale[["stress_3"]]) <- "How often have you felt nervous and stressed?"
+label(stress_scale[["stress_4"]]) <- "How often have you felt confident about your ability to handle your personal problems?"
+label(stress_scale[["stress_5"]]) <- "How often have you felt that things were going your way?"
+label(stress_scale[["stress_6"]]) <- "How often have you found that you could not cope with all the things that you had to do?"
+label(stress_scale[["stress_7"]]) <- "How often have you been able to control irritations in your life?"
+label(stress_scale[["stress_8"]]) <- "How often have you felt that you were on top of things?"
+label(stress_scale[["stress_9"]]) <- "How often have you been angered because of things that happened that were outside of your control?"
+label(stress_scale[["stress_10"]]) <- "How often have you felt difficulties were piling up so high that you could not overcome them?"
+
+# Look at the data
+head(stress_scale)
+```
+
+Convert the "prefer not to respond" options to "NA":
+```{r}
+
+stress_scale$stress_1[stress_scale$stress_1 == 6] <- NA
+stress_scale$stress_2[stress_scale$stress_2 == 6] <- NA
+stress_scale$stress_3[stress_scale$stress_3 == 6] <- NA
+stress_scale$stress_4[stress_scale$stress_4 == 1] <- NA
+stress_scale$stress_5[stress_scale$stress_5 == 1] <- NA
+stress_scale$stress_6[stress_scale$stress_6 == 6] <- NA
+stress_scale$stress_7[stress_scale$stress_7 == 1] <- NA
+stress_scale$stress_8[stress_scale$stress_8 == 1] <- NA
+stress_scale$stress_9[stress_scale$stress_9 == 6] <- NA
+stress_scale$stress_10[stress_scale$stress_10 == 6] <- NA
+
+```
+
+```{r}
+# Reverse code items 4, 5, 7, and 8
+stress_scale <- stress_scale %>%
+  mutate(
+    stress_4 = 6 - stress_4,
+    stress_5 = 6 - stress_5,
+    stress_7 = 6 - stress_7,
+    stress_8 = 6 - stress_8
+  )
+
+```
+
+## Calculate the scale
+
+### Calculate standard means and sums
+
+See procedures listed in the [scoring document](https://nihtoolbox.my.salesforce.com/sfc/p/#2E000001H4ee/a/2E000000Ub7C/9UzNbxkwc9khhqKaYkXmAYUVZaniThvUkA16Ddkp6eY) for calculating T scores from the sums.
+
+First, calculate the sum and the mean scores:
+```{r}
+
+stress_scale$stress_sum <- apply(stress_scale[,paste0("stress_",1:10)], 1, sum)
+stress_scale$stress_mean <- apply(stress_scale[,paste0("stress_",1:10)], 1, mean)
+
+label(stress_scale[["stress_sum"]]) <- "sum of stress items"
+label(stress_scale[["stress_mean"]]) <- "mean of stress items"
+```
+
+### Calculate the T scores
+
+Now calculate the T scores. First we need to examine if there are any missing data. Create an object containing only rows of data that include missing data:
+```{r}
+stress_scale.na <- stress_scale[!complete.cases(stress_scale),]
+```
+
+There are 19 cases that have missing data to at least one of the questions on this scale. These are cases with the following IDs:
+
+* 6727c70607bba7b951fee668
+* 672e5d7107bba7b9512a2bdb
+* 6732891807bba7b9514ae1aa
+* 67324c2e07bba7b951482af2
+* 6732539707bba7b951488555
+* 6732545907bba7b95148929e
+* 6733cefc7037504722affa62
+* 6733cfff7037504722b00579
+* 6733dc3c7037504722b0ae56
+* 6733dccd7037504722b0b288
+* 673503d6645ca7ce4537c0b6
+* 673508f3645ca7ce4537faa3
+* 64e692bf45191ff324ed01d6
+* 67351413645ca7ce453892a6
+* 67351be5645ca7ce4538fc44
+* 673520e8645ca7ce4539380d
+* 6735243c645ca7ce45397fab
+* 672e83f707bba7b9512ba59c
+* 674b7ab3cc103e20a9997d43
+
+## Investigating missing data
+```{r}
+
+missing_summary <- stress_scale %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(cols = everything(),
+               names_to = "variable",
+               values_to = "n_missing") %>%
+  mutate(pct_missing = round((n_missing / nrow(stress_scale)) * 100, 2)) %>%
+  filter(n_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+missing_summary
+```
+
+
+Remove unneeded columns, including the ID so it doesn't get used in the mean imputation:
+```{r}
+# First, pull out the ID column:
+id.list <- stress_scale.na$id
+
+# Now remove the columns we don't want to be part of the mean imputation 
+stress_scale.na <- subset(stress_scale.na, select= -c(id, stress_sum, stress_mean))
+
+```
+
+Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+```{r}
+for(i in 1:nrow(stress_scale.na)) {
+  stress_scale.na[i, ][is.na(stress_scale.na[i, ])] <- mean(as.numeric(stress_scale.na[i, ]), na.rm = TRUE)
+}
+```
+
+Round the values back to whole numbers:
+```{r}
+stress_scale.na <- round(stress_scale.na, digits=0)
+```
+
+Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
+```{r}
+stress_scale.na$stress_sum_MI <- apply(stress_scale.na[,paste0("stress_",1:10)], 1, sum)
+stress_scale.na$stress_mean_MI <- apply(stress_scale.na[,paste0("stress_",1:10)], 1, mean)
+
+```
+
+Put the IDs back into the data frame:
+```{r}
+stress_scale.na$id <- id.list
+
+```
+
+Now we need to merge the imputed cases back into the main data frame. We don't want to end up with duplicate rows of data for the cases that had missing values, so first we will remove these cases from the original data frame:
+```{r}
+stress_scale2 <- stress_scale[ ! stress_scale$id %in% id.list, ]
+
+```
+
+Now add the newly-imputed cases back into the main data frame:
+```{r}
+# Create columns in stress_scale that we will merge the mean-imputed data into
+stress_scale2$stress_sum_MI <-stress_scale2$stress_sum
+stress_scale2$stress_mean_MI <-stress_scale2$stress_mean
+
+# Create empty columns in stress_scale.na for the conventional mean and sum (not MI)
+stress_scale.na$stress_sum <-NA
+stress_scale.na$stress_mean <-NA
+
+# Order the columns to be consistent for merge
+col_order <- c("id", "stress_1", "stress_2", "stress_3", "stress_4", "stress_5", "stress_6", "stress_7", "stress_8", "stress_9", "stress_10","stress_sum",  "stress_mean", "stress_sum_MI",  "stress_mean_MI")
+
+stress_scale2 <- stress_scale2[, col_order]
+stress_scale.na <- stress_scale.na[, col_order]
+
+# Merge the imputed cases back into stress_scale
+stress_scale3 <- rbind(stress_scale2, stress_scale.na)
+
+```
+
+
+Now use [the documentation](https://nihtoolbox.my.salesforce.com/sfc/p/#2E000001H4ee/a/2E000000Ub7C/9UzNbxkwc9khhqKaYkXmAYUVZaniThvUkA16Ddkp6eY) to re-code the sums into T scores (see page 27):
+
+```{r}
+describe(stress_scale3$stress_sum)
+
+# The minimum sum score is 19 and the maximum is 50, so we will only recode that range of values from the table in the documentation.
+
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==19] <- 42.0
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==20] <- 43.7
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==21] <- 45.3
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==22] <- 46.9
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==23] <- 48.4
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==24] <- 49.9
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==25] <- 51.5
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==26] <- 53
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==27] <- 54.5
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==28] <- 56.1
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==29] <- 57.5
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==30] <- 59
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==31] <- 60.5
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==32] <- 61.9
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==33] <- 63.4
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==34] <- 64.8
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==35] <- 66.2
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==36] <- 67.6
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==37] <- 69
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==38] <- 70.4
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==39] <- 71.8
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==40] <- 73.1
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==41] <- 74.5
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==42] <- 75.9
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==43] <- 77.4
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==44] <- 78.9
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==45] <- 80.4
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==46] <- 81.9
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==47] <- 83.4
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==48] <- 84.8
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==49] <- 86.0
+stress_scale3$stress_T[stress_scale3$stress_sum_MI==50] <- 87.1
+
+
+```
+Participant 6727c70607bba7b951fee668 did not respond to any of the items. Recode their responses to be NA instead of NaN.
+```{r}
+
+stress_scale3 <- stress_scale3 %>%
+  mutate(across(stress_1:stress_10,
+                ~ ifelse(id == "6727c70607bba7b951fee668", NA, .)))
+
+```
+
+Save the data file:
+```{r, eval = FALSE}
+#Save to Hayleigh's Mac:
+write.csv(stress_scale3,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SONA W1 Perceived Stress Part 1.csv')
+
+#Save to Jess's Mac:
+
+
+```
+
+## Examine the Data
+
+### Reliability
+
+```{r, warning = FALSE}
+items <- c("stress_1",  "stress_2", "stress_3", "stress_4", "stress_5", "stress_6", "stress_7", "stress_8", "stress_9", "stress_10")
+
+alpha(stress_scale3[,items])
+```
+
+### Descriptive statistics
+```{r}
+describe(stress_scale3$stress_sum_MI)
+describe(stress_scale3$stress_mean_MI)
+describe(stress_scale3$stress_T)
+```
+
+### Histograms
+
+```{r, message = FALSE, warning = FALSE}
+qplot(stress_scale3$stress_mean_MI, geom="histogram") 
+
+qplot(stress_scale3$stress_T, geom="histogram")
+```
+
