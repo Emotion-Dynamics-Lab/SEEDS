@@ -117,11 +117,40 @@ See procedures listed in the [scoring document](https://nihtoolbox.my.salesforce
 First, calculate the sum and the mean scores:
 ```{r}
 
+# Total alexithymia score = sum all subscales
+# Scoring range: 20-100 (higher scores = greater challenges)
 tas_scale$tas_sum <- apply(tas_scale[,paste0("tas_",1:20)], 1, sum)
+
 tas_scale$tas_mean <- apply(tas_scale[,paste0("tas_",1:20)], 1, mean)
 
 label(tas_scale$tas_sum) <- "sum of tas items"
 label(tas_scale$tas_mean) <- "mean of tas items"
+```
+
+Calculate sum and mean scores of the 3 subscales:
+```{r}
+
+# Factor I: Difficulty identifying feelings (Items 1, 3, 6, 7, 9, 13, 14)
+tas_scale$tas_diff_id_sum <- apply(tas_scale[,paste0("tas_", c(1,3,6,7,9,13,14))], 1, sum)
+tas_scale$tas_diff_id_mean <- apply(tas_scale[,paste0("tas_", c(1,3,6,7,9,13,14))], 1, mean)
+
+# Factor II:Difficulty describing feelings (Items 2, 4R, 11, 12, 17)
+tas_scale$tas_diff_describ_sum <- apply(tas_scale[,paste0("tas_", c(2,4,11,12,17))], 1, sum)
+tas_scale$tas_diff_describ_mean <- apply(tas_scale[,paste0("tas_", c(2,4,11,12,17))], 1, mean)
+
+#Factor III: Externally-oriented thinking (Items 5R, 8, 10R, 15, 16, 18R, 19R, 20)
+tas_scale$tas_ext_think_sum <- apply(tas_scale[,paste0("tas_", c(5,8,10,15,16,18,19,20))], 1, sum)
+tas_scale$tas_ext_think_mean <- apply(tas_scale[,paste0("tas_", c(5,8,10,15,16,18,19,20))], 1, mean)
+
+label(tas_scale$tas_diff_id_sum) <- "sum of difficulty identifying feelings items"
+label(tas_scale$tas_diff_id_mean) <- "mean of difficulty identifying feelings items"
+
+label(tas_scale$tas_diff_describ_sum) <- "sum of difficulty describing feelings items"
+label(tas_scale$tas_diff_describ_mean) <- "mean of difficulty describing feelings items"
+
+label(tas_scale$tas_ext_think_sum) <- "sum of externally-oriented thinking items"
+label(tas_scale$tas_ext_think_mean) <- "mean of externally-oriented thinking items"
+
 ```
 
 ### Calculate the T scores
