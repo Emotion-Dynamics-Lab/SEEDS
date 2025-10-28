@@ -94,30 +94,16 @@ label(tas_scale[["tas_20"]]) <- "Looking for hidden meanings in in movies or pla
 head(tas_scale)
 ```
 
-Convert the "prefer not to respond" options to "NA":
+Reverse code items 4, 5, 10, 18, and 19
 ```{r}
 
-stress_scale$stress_1[stress_scale$stress_1 == 6] <- NA
-stress_scale$stress_2[stress_scale$stress_2 == 6] <- NA
-stress_scale$stress_3[stress_scale$stress_3 == 6] <- NA
-stress_scale$stress_4[stress_scale$stress_4 == 1] <- NA
-stress_scale$stress_5[stress_scale$stress_5 == 1] <- NA
-stress_scale$stress_6[stress_scale$stress_6 == 6] <- NA
-stress_scale$stress_7[stress_scale$stress_7 == 1] <- NA
-stress_scale$stress_8[stress_scale$stress_8 == 1] <- NA
-stress_scale$stress_9[stress_scale$stress_9 == 6] <- NA
-stress_scale$stress_10[stress_scale$stress_10 == 6] <- NA
-
-```
-
-```{r}
-# Reverse code items 4, 5, 7, and 8
-stress_scale <- stress_scale %>%
+tas_scale <- tas_scale %>%
   mutate(
-    stress_4 = 6 - stress_4,
-    stress_5 = 6 - stress_5,
-    stress_7 = 6 - stress_7,
-    stress_8 = 6 - stress_8
+    tas_4 = 6 - tas_4,
+    tas_5 = 6 - tas_5,
+    tas_10 = 6 - tas_10,
+    tas_18 = 6 - tas_18,
+    tas_19 = 6 - tas_19,
   )
 
 ```
