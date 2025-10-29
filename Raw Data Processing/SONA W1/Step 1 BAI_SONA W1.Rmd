@@ -214,9 +214,6 @@ df_scale3 <- rbind(df_scale2, df_scale.na)
 ```
 
 
-```{r}
-## Save the data 
-
 Save the data file:
 ```{r, eval = FALSE}
 # Hayleigh's Mac:
@@ -231,16 +228,17 @@ write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_D
 ### Reliability
 ```{r, warning = FALSE}
 items <- c ("bai_1",  "bai_2" , "bai_3" , "bai_4" , "bai_5" , "bai_6" , "bai_7" , "bai_8" , "bai_9",  "bai_10" , "bai_11" , "bai_12" , "bai_13" , "bai_14" , "bai_15" , "bai_16" , "bai_17",  "bai_18" , "bai_19" , "bai_20" , "bai_21")
-alpha(df_scale[,items])
+alpha(df_scale3[,items])
 ```
 
 ### Descriptive statistics
 ```{r}
-describe(df_scale$bai_sum)
-describe(df_scale$bai_mean)
+describe(df_scale3$bai_sum_MI)
+describe(df_scale3$bai_mean_MI)
 ```
 
 ### Histogram
 ```{r, warning = FALSE, message = FALSE}
-qplot(df_scale$bai_mean, geom="histogram") 
+qplot(df_scale3$bai_sum_MI, geom="histogram") 
+qplot(df_scale3$bai_mean_MI, geom="histogram") 
 ```
