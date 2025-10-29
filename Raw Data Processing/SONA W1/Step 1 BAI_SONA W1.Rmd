@@ -136,6 +136,85 @@ label(df_scale[["bai_mean"]]) <- "mean of bai items"
 head(df_scale)
 ```
 
+Impute missing values for participants who responded to at least 50% of the items (11 items).
+
+First, pull out columns we do not want used in the mean imputation:
+```{r}
+# Pull out the id column:
+df_scale.na <- df_scale
+id.list <- df_scale.na$id
+
+#Remove columns we don't want to include in the mean imputation:
+df_scale.na <- subset(df_scale.na, select = -c(id, bai_sum, bai_mean))
+```
+
+Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+```{r}
+# Count the number of non-missing items per participant
+num_items <- ncol(df_scale.na)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
+for(i in 1:nrow(df_scale.na)) {
+  non_missing_count <- sum(!is.na(df_scale.na[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    df_scale.na[i, ][is.na(df_scale.na[i, ])] <- mean(as.numeric(df_scale.na[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    df_scale.na[i, ] <- NA
+  }
+}
+
+```
+
+Round the values back to whole numbers:
+```{r}
+df_scale.na <- round(df_scale.na, digits=0)
+```
+
+Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
+```{r}
+df_scale.na$bai_sum_MI <- apply(df_scale.na[,paste0("bai_",1:21)], 1, sum)
+df_scale.na$bai_mean_MI <- apply(df_scale.na[,paste0("bai_",1:21)], 1, mean)
+
+```
+
+Put the IDs back into the data frame:
+```{r}
+df_scale.na$id <- id.list
+
+```
+
+Now we need to merge the imputed cases back into the main data frame. We don't want to end up with duplicate rows of data for the cases that had missing values, so first we will remove these cases from the original data frame:
+```{r}
+df_scale2 <- df_scale[ ! df_scale$id %in% id.list, ]
+
+```
+
+Now add the newly-imputed cases back into the main data frame:
+```{r}
+# Create columns in df_scale that we will merge the mean-imputed data into
+df_scale2$bai_sum_MI <-df_scale2$bai_sum
+df_scale2$bai_mean_MI <-df_scale2$bai_mean
+
+# Create empty columns in df_scale.na for the conventional mean and sum (not MI)
+df_scale.na$bai_sum <-NA
+df_scale.na$bai_mean <-NA
+
+# Order the columns to be consistent for merge
+col_order <- c("id", "bai_1", "bai_2", "bai_3", "bai_4", "bai_5", "bai_6", "bai_7", "bai_8", "bai_9", "bai_10","bai_11","bai_12", "bai_13","bai_14","bai_15", "bai_16", "bai_17", "bai_18", "bai_19","bai_20","bai_21", "bai_sum", "bai_mean", "bai_sum_MI",  "bai_mean_MI")
+
+df_scale2 <- df_scale2[, col_order]
+df_scale.na <- df_scale.na[, col_order]
+
+# Merge the imputed cases back into stress_scale
+df_scale3 <- rbind(df_scale2, df_scale.na)
+```
+
+
+```{r}
 ## Save the data 
 
 Save the data file:
