@@ -209,8 +209,20 @@ col_order <- c("id", "bai_1", "bai_2", "bai_3", "bai_4", "bai_5", "bai_6", "bai_
 df_scale2 <- df_scale2[, col_order]
 df_scale.na <- df_scale.na[, col_order]
 
-# Merge the imputed cases back into stress_scale
+# Merge the imputed cases back into df_scale
 df_scale3 <- rbind(df_scale2, df_scale.na)
+
+# Bring in the non-imputed mean and sum from df_scale
+df_scale3 <- merge(df_scale3,
+                   df_scale[, c("id", "bai_sum", "bai_mean")],
+                   by = "id",
+                   all.x = TRUE,
+                   suffixes = c("", "_orig"))
+
+# Reorder columns
+df_scale3 <- df_scale3[, c("id", paste0("bai_", 1:21),
+                           "bai_sum_orig", "bai_mean_orig",   # non-imputed
+                           "bai_sum_MI", "bai_mean_MI")]      # imputed
 ```
 
 
