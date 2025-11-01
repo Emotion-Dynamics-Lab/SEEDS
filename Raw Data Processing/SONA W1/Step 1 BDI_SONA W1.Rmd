@@ -100,12 +100,11 @@ missing_summary
 
 ```
 
-## Calculate the scales
+## Calculate the scale
 
 ### Calculate the standard mean and sum
 
-Sum and mean scores of Beck Depression Inventory. 
-**Note, this still gives NAs in sum and mean columns if there are any NA's in the data, but it would be easy enough to tell it to ignore NAs if we need to
+Sum and mean scores of Beck Depression Inventory:
 ```{r}
 
 df_scale$bdi_sum <- apply(df_scale[,paste0("bdi_",1:20)], 1, sum)
@@ -139,6 +138,97 @@ label(df_scale[["bdi_20"]]) <- "Loss of Interest in Sex"
 label(df_scale[["bdi_sum"]]) <- "sum of bdi items"
 label(df_scale[["bdi_mean"]]) <- "mean of bdi items"
 
+# Look at the data
+head(df_scale)
+```
+
+Impute missing values for participants who responded to at least 50% of the items (10 items).
+
+First, pull out columns we do not want used in the mean imputation:
+```{r}
+# Pull out the id column:
+df_scale.na <- df_scale
+id.list <- df_scale.na$id
+
+#Remove columns we don't want to include in the mean imputation:
+df_scale.na <- subset(df_scale.na, select = -c(id, bdi_sum, bdi_mean))
+```
+
+Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+```{r}
+# Count the number of non-missing items per participant
+num_items <- ncol(df_scale.na)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
+for(i in 1:nrow(df_scale.na)) {
+  non_missing_count <- sum(!is.na(df_scale.na[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    df_scale.na[i, ][is.na(df_scale.na[i, ])] <- mean(as.numeric(df_scale.na[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    df_scale.na[i, ] <- NA
+  }
+}
+
+```
+
+Round the values back to whole numbers:
+```{r}
+df_scale.na <- round(df_scale.na, digits=0)
+```
+
+Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
+```{r}
+df_scale.na$bdi_sum_MI <- apply(df_scale.na[,paste0("bdi_",1:20)], 1, sum)
+df_scale.na$bdi_mean_MI <- apply(df_scale.na[,paste0("bdi_",1:20)], 1, mean)
+
+```
+
+Put the IDs back into the data frame:
+```{r}
+df_scale.na$id <- id.list
+
+```
+
+Now we need to merge the imputed cases back into the main data frame. We don't want to end up with duplicate rows of data for the cases that had missing values, so first we will remove these cases from the original data frame:
+```{r}
+df_scale2 <- df_scale[ ! df_scale$id %in% id.list, ]
+
+```
+
+Now add the newly-imputed cases back into the main data frame:
+```{r}
+# Create columns in df_scale that we will merge the mean-imputed data into
+df_scale2$bdi_sum_MI <-df_scale2$bdi_sum
+df_scale2$bdi_mean_MI <-df_scale2$bdi_mean
+
+# Create empty columns in df_scale.na for the conventional mean and sum (not MI)
+df_scale.na$bdi_sum <-NA
+df_scale.na$bdi_mean <-NA
+
+# Order the columns to be consistent for merge
+col_order <- c("id", "bdi_1", "bdi_2", "bdi_3", "bdi_4", "bdi_5", "bdi_6", "bdi_7", "bdi_8", "bdi_9", "bdi_10","bdi_11","bdi_12", "bdi_13","bdi_14","bdi_15", "bdi_16", "bdi_17", "bdi_18", "bdi_19","bdi_20", "bdi_sum", "bdi_mean", "bdi_sum_MI",  "bdi_mean_MI")
+
+df_scale2 <- df_scale2[, col_order]
+df_scale.na <- df_scale.na[, col_order]
+
+# Merge the imputed cases back into df_scale
+df_scale3 <- rbind(df_scale2, df_scale.na)
+
+# Bring in the non-imputed mean and sum from df_scale
+df_scale3 <- merge(df_scale3,
+                   df_scale[, c("id", "bdi_sum", "bdi_mean")],
+                   by = "id",
+                   all.x = TRUE,
+                   suffixes = c("", "_orig"))
+
+# Reorder columns
+df_scale3 <- df_scale3[, c("id", paste0("bdi_", 1:20),
+                           "bdi_sum_orig", "bdi_mean_orig",   # non-imputed
+                           "bdi_sum_MI", "bdi_mean_MI")]      # imputed
 ```
 
 
@@ -155,21 +245,22 @@ write.csv(df_scale,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_D
 ```{r, warning = FALSE}
 
 items <- c("bdi_1",  "bdi_2" , "bdi_3" , "bdi_4" , "bdi_5" , "bdi_6" , "bdi_7" , "bdi_8" , "bdi_9" , "bdi_10" , "bdi_11" , "bdi_12" , "bdi_13" , "bdi_14" , "bdi_15" , "bdi_16" , "bdi_17" , "bdi_18" , "bdi_19" , "bdi_20")
-alpha(df_scale[,items])
+alpha(df_scale3[,items])
 
 ```
 
 ### Descriptive statistics
 ```{r}
-describe(df_scale$bdi_sum)
-describe(df_scale$bdi_mean)
+describe(df_scale3$bdi_sum_MI)
+describe(df_scale3$bdi_mean_MI)
 ```
 
 
 ### Histogram
 ```{r, warning = FALSE, message = FALSE}
 
-qplot(df_scale$bdi_mean, geom="histogram") 
+qplot(df_scale3$bdi_sum_MI, geom="histogram") 
+qplot(df_scale3$bdi_mean_MI, geom="histogram")
 
 ```
 
