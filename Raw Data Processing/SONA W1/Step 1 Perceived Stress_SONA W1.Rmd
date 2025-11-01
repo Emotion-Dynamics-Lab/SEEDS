@@ -165,7 +165,8 @@ missing_summary
 
 Remove unneeded columns, including the ID so it doesn't get used in the mean imputation:
 ```{r}
-# First, pull out the ID column:
+# Pull out the id column:
+stress_scale.na <- stress_scale
 id.list <- stress_scale.na$id
 
 # Now remove the columns we don't want to be part of the mean imputation 
@@ -175,9 +176,23 @@ stress_scale.na <- subset(stress_scale.na, select= -c(id, stress_sum, stress_mea
 
 Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
 ```{r}
+# Count the number of non-missing items per participant
+num_items <- ncol(stress_scale.na)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
 for(i in 1:nrow(stress_scale.na)) {
-  stress_scale.na[i, ][is.na(stress_scale.na[i, ])] <- mean(as.numeric(stress_scale.na[i, ]), na.rm = TRUE)
+  non_missing_count <- sum(!is.na(stress_scale.na[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    stress_scale.na[i, ][is.na(stress_scale.na[i, ])] <- mean(as.numeric(stress_scale.na[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    stress_scale.na[i, ] <- NA
+  }
 }
+
 ```
 
 Round the values back to whole numbers:
@@ -206,16 +221,17 @@ stress_scale2 <- stress_scale[ ! stress_scale$id %in% id.list, ]
 
 Now add the newly-imputed cases back into the main data frame:
 ```{r}
+
 # Create columns in stress_scale that we will merge the mean-imputed data into
 stress_scale2$stress_sum_MI <-stress_scale2$stress_sum
 stress_scale2$stress_mean_MI <-stress_scale2$stress_mean
 
-# Create empty columns in stress_scale.na for the conventional mean and sum (not MI)
+# Create empty columns in df_scale.na for the conventional mean and sum (not MI)
 stress_scale.na$stress_sum <-NA
 stress_scale.na$stress_mean <-NA
 
 # Order the columns to be consistent for merge
-col_order <- c("id", "stress_1", "stress_2", "stress_3", "stress_4", "stress_5", "stress_6", "stress_7", "stress_8", "stress_9", "stress_10","stress_sum",  "stress_mean", "stress_sum_MI",  "stress_mean_MI")
+col_order <- c("id", "stress_1", "stress_2", "stress_3", "stress_4", "stress_5", "stress_6", "stress_7", "stress_8", "stress_9", "stress_10", "stress_sum", "stress_mean", "stress_sum_MI",  "stress_mean_MI")
 
 stress_scale2 <- stress_scale2[, col_order]
 stress_scale.na <- stress_scale.na[, col_order]
@@ -223,13 +239,23 @@ stress_scale.na <- stress_scale.na[, col_order]
 # Merge the imputed cases back into stress_scale
 stress_scale3 <- rbind(stress_scale2, stress_scale.na)
 
+# Bring in the non-imputed mean and sum from stress_scale
+stress_scale3 <- merge(stress_scale3,
+                   stress_scale[, c("id", "stress_sum", "stress_mean")],
+                   by = "id",
+                   all.x = TRUE,
+                   suffixes = c("", "_orig"))
+
+# Reorder columns
+stress_scale3 <- stress_scale3[, c("id", paste0("stress_", 1:10),
+                           "stress_sum_orig", "stress_mean_orig",   # non-imputed
+                           "stress_sum_MI", "stress_mean_MI")]      # imputed
 ```
 
-
 Now use [the documentation](https://nihtoolbox.my.salesforce.com/sfc/p/#2E000001H4ee/a/2E000000Ub7C/9UzNbxkwc9khhqKaYkXmAYUVZaniThvUkA16Ddkp6eY) to re-code the sums into T scores (see page 27):
-
 ```{r}
-describe(stress_scale3$stress_sum)
+
+describe(stress_scale3$stress_sum_orig)
 
 # The minimum sum score is 19 and the maximum is 50, so we will only recode that range of values from the table in the documentation.
 
@@ -266,14 +292,6 @@ stress_scale3$stress_T[stress_scale3$stress_sum_MI==48] <- 84.8
 stress_scale3$stress_T[stress_scale3$stress_sum_MI==49] <- 86.0
 stress_scale3$stress_T[stress_scale3$stress_sum_MI==50] <- 87.1
 
-
-```
-Participant 6727c70607bba7b951fee668 did not respond to any of the items. Recode their responses to be NA instead of NaN.
-```{r}
-
-stress_scale3 <- stress_scale3 %>%
-  mutate(across(stress_1:stress_10,
-                ~ ifelse(id == "6727c70607bba7b951fee668", NA, .)))
 
 ```
 
