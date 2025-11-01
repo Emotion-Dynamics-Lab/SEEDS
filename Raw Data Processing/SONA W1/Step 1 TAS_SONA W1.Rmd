@@ -182,9 +182,23 @@ tas_scale.na <- subset(tas_scale.na, select= -c(id, tas_sum, tas_mean))
 
 Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
 ```{r}
+# Count the number of non-missing items per participant
+num_items <- ncol(tas_scale.na)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
 for(i in 1:nrow(tas_scale.na)) {
-  tas_scale.na[i, ][is.na(tas_scale.na[i, ])] <- mean(as.numeric(tas_scale.na[i, ]), na.rm = TRUE)
+  non_missing_count <- sum(!is.na(tas_scale.na[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    tas_scale.na[i, ][is.na(tas_scale.na[i, ])] <- mean(as.numeric(tas_scale.na[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    tas_scale.na[i, ] <- NA
+  }
 }
+
 ```
 
 Round the values back to whole numbers:
@@ -227,25 +241,26 @@ col_order <- c("id", "tas_1", "tas_2", "tas_3", "tas_4", "tas_5", "tas_6", "tas_
 tas_scale2 <- tas_scale2[, col_order]
 tas_scale.na <- tas_scale.na[, col_order]
 
-# Merge the imputed cases back into stress_scale
+# Merge the imputed cases back into tas_scale
 tas_scale3 <- rbind(tas_scale2, tas_scale.na)
 
+# Bring in the non-imputed mean and sum from df_scale, as well as subscale mean and sums
+tas_scale3 <- merge(tas_scale3,
+                   tas_scale[, c("id", "tas_sum", "tas_mean", "tas_diff_id_sum","tas_diff_id_mean", "tas_diff_describ_sum", "tas_diff_describ_mean", "tas_ext_think_sum", "tas_ext_think_mean")],
+                   by = "id",
+                   all.x = TRUE,
+                   suffixes = c("", "_orig"))
+
+# Reorder columns
+tas_scale3 <- tas_scale3[, c("id", paste0("tas_", 1:20),
+                           "tas_sum_orig", "tas_mean_orig", "tas_diff_id_sum","tas_diff_id_mean", "tas_diff_describ_sum", "tas_diff_describ_mean", "tas_ext_think_sum", "tas_ext_think_mean",
+                           "tas_sum_MI", "tas_mean_MI")]      # imputed
 ```
-
-Participant 6727c70607bba7b951fee668 did not respond to any of the items. Recode their responses to be NA instead of NaN.
-```{r}
-
-tas_scale3 <- tas_scale3 %>%
-  mutate(across(tas_1:tas_20,
-                ~ ifelse(id == "6727c70607bba7b951fee668", NA, .)))
-
-```
-
 
 Save the data file:
 ```{r, eval = FALSE}
 #Save to Hayleigh's Mac:
-write.csv(stress_scale3,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SONA W1 Perceived Stress Part 1.csv')
+write.csv(tas_scale3,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SONA W1 Perceived Stress Part 1.csv')
 
 #Save to Jess's Mac:
 
