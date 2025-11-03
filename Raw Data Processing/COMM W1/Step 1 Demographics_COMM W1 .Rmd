@@ -104,6 +104,7 @@ demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 3] <- "neither_transg
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 4] <- "unsure_gender_trajectory"
 #For "GenderTrajectoryNeitherCisgenderNorTransgenderText", 2 participants answered "male"/"Male", change these to NA:
 demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText[demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText %in% c("male","Male ")] <- NA
+# Check other responses next time I run
 
 
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 1] <- "binary"
@@ -154,20 +155,6 @@ demo_scale$EthnicityPreferNotToSay[demo_scale$EthnicityPreferNotToSay == 1] <- N
 demo_scale$Ladder <- as.numeric(demo_scale$Ladder)
 #demo_scale$Ladder[demo_scale$Ladder == 11] <- NA (No prefer not to respond option) 
 demo_scale$Ladder <- 11 - demo_scale$Ladder
-
-#International or Domestic student status - change prefer not to respond option (3) to NA, Factor and make responses to text
-demo_scale$InternationalDomesticStudent[demo_scale$InternationalDomesticStudent == 3] <- NA
-demo_scale$InternationalDomesticStudent <- factor(demo_scale$InternationalDomesticStudent, levels = c(1,2), labels = c("International", "Domestic"))
-
-#Undergrad Year - Change 'prefer not to respond' option to NA
-demo_scale$UndergradYear[demo_scale$UndergradYear == 6] <- NA
-
-#Part or Full Time student - change prefer not to respond option (3) to NA, Factor and make responses to text
-demo_scale$PartOrFullTime[demo_scale$PartOrFullTime == 3] <- NA
-demo_scale$PartOrFullTime <- factor(demo_scale$PartOrFullTime, levels = c(1,2), labels = c("Part", "Full"))
-
-#Faculty - change prefer not to respond option (8) to NA
-demo_scale$Faculty[demo_scale$Faculty == 8] <- NA
 
 ```
 
