@@ -172,23 +172,27 @@ demo_scale$BirthMonth[demo_scale$BirthMonth %in% as.character(1:12)] <- as.numer
 
 
 # Step 3: Convert month names/abbreviations - use table() function to look for "weird" entries
-demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("january", "jan")] <- 1
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("january", "janvier")] <- 1
 demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("february", "feb")] <- 2
-demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("march", "mar")] <- 3
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("march", "march 1st, 2002")] <- 3
 demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("april", "apr")] <- 4
 demo_scale$BirthMonth[demo_scale$BirthMonth == "may"] <- 5
 demo_scale$BirthMonth[demo_scale$BirthMonth == "june"] <- 6
 demo_scale$BirthMonth[demo_scale$BirthMonth == "july"] <- 7
-demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("august", "aug")] <- 8
-demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("september", "sep", "sept", "sepg", "septemner")] <- 9
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("august")] <- 8
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("september", "0\nseptember", "09")] <- 9
 demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("october", "oct")] <- 10
-demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("november", "nov", "novem", "novembef")] <- 11
-demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("december", "dec", "dece")] <- 12
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("november", "nov")] <- 11
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("december", "dec")] <- 12
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("2001", "23", "n/a")] <- NA
+demo_scale$BirthMonth[demo_scale$id == "680a387c19ce95348696b2fc"] <- 7 #Had to hardcode this response as P entered their birthdate in 'date' format
 
 # Step 4: convert the column to numeric type
 demo_scale$BirthMonth <- as.numeric(demo_scale$BirthMonth)
 
 table(demo_scale$BirthMonth) # check to make sure
+
+# START HERE NEXT
 
 # Clean up BirthYear column to keep 4-digit numbers
 demo_scale <- demo_scale %>%
