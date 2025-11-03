@@ -90,22 +90,12 @@ colnames(demo_scale)[colnames(demo_scale)=="X.41"] <- "Ladder"
 
 colnames(demo_scale)[colnames(demo_scale)=="X.42"] <- "Feedback"
 
-colnames(demo_scale)[colnames(demo_scale)=="X.43"] <- "InternationalDomesticStudent"
-
-colnames(demo_scale)[colnames(demo_scale)=="X.44"] <- "UndergradYear"
-
-colnames(demo_scale)[colnames(demo_scale)=="X.45"] <- "PartOrFullTime"
-
-colnames(demo_scale)[colnames(demo_scale)=="X.46"] <- "Faculty"
-
-colnames(demo_scale)[colnames(demo_scale)=="X.47"] <- "GPA"
-
 ```
 
 Change/fix responses to be accurate/meaningful:
 ```{r}
 #Change 0 to NA 
-demo_scale[demo_scale == 0] <- NA #Note this also changes several '0' responses in the GPA question to NA, will either need workaround or assume that is a 'no response' since I don't think you can be enrolled with a 0 GPA
+demo_scale[demo_scale == 0] <- NA 
 
 #Change Gender Identity responses to text 
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 1] <- "trans/transgender"
