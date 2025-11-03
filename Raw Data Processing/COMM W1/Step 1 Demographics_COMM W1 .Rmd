@@ -102,7 +102,9 @@ demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 1] <- "trans/transgen
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 2] <- "cisgender"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 3] <- "neither_transgender_nor_cisgender"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 4] <- "unsure_gender_trajectory"
-demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText[demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText %in% c("h","n")] <- NA
+#For "GenderTrajectoryNeitherCisgenderNorTransgenderText", 2 participants answered "male"/"Male", change these to NA:
+demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText[demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText %in% c("male","Male ")] <- NA
+
 
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 1] <- "binary"
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 2] <- "nonbinary"
