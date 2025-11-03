@@ -1,0 +1,96 @@
+---
+title: "Step 0 Clean ExpiWell Data - Community W1"
+author: "Hayleigh Armstrong & Jess Lougheed"
+date: "11/02/2025"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+## Preliminary Steps
+
+Load packages
+
+```{r, warnings = FALSE, message = FALSE, include = FALSE}
+library(tidyverse)
+library(psych)
+```
+
+Read in the data:
+```{r}
+#File path on Hayleigh's Mac
+df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_COMM_W1/Demographics_Community_numeric.csv", na.strings=c("","NA"))
+
+# File path on Jess's Mac
+#df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_COMM_W1/Demographics_Community_numeric.csv", na.strings=c("","NA"))
+
+df <- as.data.frame(df)
+
+```
+
+Remove the responses of participants who were excluded from COMM W1 (based on Laura's table on Notion):
+```{r}
+df = filter(df, !(X.7 %in% c("67d3cf00c1ae9946c57f5245",
+                             "680924677d7dd49024ad3129",
+                             "68080b7008fd7252205f602c",
+                             "681346515a3f3054a0754d08",
+                             "680810ce08fd7252205fc83e",
+                             "6807a56d08fd72522058a99b",
+                             "681215895a3f3054a06a2114",
+                             "681085385a3f305a05bad3e",
+                             "681942ed07710cff0aa9fbb1",
+                             "681945c307710cff0aaa3579",
+                             "68198c2e07710cff0aace0f0",
+                             "68198d8007710cff0aace763",
+                             "681998e8307710cff0aacf1da",
+                             "6819bbd307710cff0aad9216",
+                             "68198f9307710cff0aacf6e5",
+                             "681942ed07710cff0aa9fbb1",
+                             "681945c307710cff0aaa3579",
+                             "681a2ac507710cff0ab07a15",
+                             "680b22be81fce634838cfb92",
+                             "680b1abc81fce634838cdc67",
+                             "6819a8c707710cff0aad540f",
+                             "680b22be81fce634838cfb92",
+                             "6807a56d08fd72522058a99b",
+                             "680810ce08fd7252205fc83e",
+                             "681a2ac507710cff0ab07a15",
+                             "6812b3665a3f3054a071c382",
+                             "680dfc745a3f3054a042bea0",
+                             "680b1abc81fce634838cdc67",
+                             "6819a8c707710cff0aad540f",
+                             "68198e8307710cff0aacf1da",
+                             "68198d8007710cff0aace763",
+                             "68198c2e07710cff0aace0f0",
+                             "681945c307710cff0aaa3579",
+                             "681942ed07710cff0aa9fbb1",
+                             "6819bbd307710cff0aad9216",
+                             "6807f0bf08fd7252205dd059",
+                             "680cdbe55a3f3054a037dcd5",
+                             "680dfc745a3f3054a042bea0")))
+
+
+```
+
+```
+
+Remove extra columns:
+```{r}
+
+cols_remove <- c("X.8", "X.9", "X.10", "X.11")
+df <- df[, !(colnames(df) %in% cols_remove)]
+```
+
+## Save the data file
+
+Save the data file. This is the file to read in to all COMM W1 ExpiWell variable preparation scripts.
+```{r, eval = FALSE}
+#On Hayleigh's Mac:
+write.csv(df,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_COMM_W1/SEEDS COMM W1 Demographics ExpiWell Data Cleaned.csv')
+
+# On Jess's Mac:
+# write.csv(df,"/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv")
+```
