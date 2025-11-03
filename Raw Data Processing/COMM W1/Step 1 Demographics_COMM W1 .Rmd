@@ -110,16 +110,21 @@ demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 1] <- "binary
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 2] <- "nonbinary"
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 3] <- "niether_binary_nor_nonbinary"
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 4] <- "gender_binary_unsure"
-demo_scale$GenderNietherBinaryNorNonbinaryText[demo_scale$GenderNietherBinaryNorNonbinaryText %in% c("b","n")] <- NA
+# 1 participant was confused by the gender binary question. Change their answers to NA
+demo_scale[demo_scale$id == "6803418d3df92472ed22e910", 
+           c("GenderBinaryRelationUnsureText", 
+             "GenderBinaryRelation")] <- NA
 
 #Change Gender SelfDescribe responses to be a consistent formatting:
 demo_scale$GenderSelfDescribeText <- tolower(trimws(demo_scale$GenderSelfDescribeText)) #removes extra spaces and turns responses lowercase
 # Create "man" category:
-demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("m", "male", "Male", "man")] <- "man"
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("make", "male", "man", "man male")] <- "man"
 # Create "woman" category:
-demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("w", "f", "female", "w", "woman", "woman, cisgender", "women")] <- "woman"
-# Assign nonsencial values as NA:
-demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c(".", "fe", "11", "age", "b", "f, fe", "february", "h", "j", "me", "y")] <- NA
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("women","women, bisexual", "f", "female", "woman", "woman, she/her" )] <- "woman"
+# Create "genderfluid" category:
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("genderfluid", "gender fluid" )] <- "genderfluid"
+# Assign nonsensicial values as NA:
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("[]")] <- NA
 table(demo_scale$GenderSelfDescribeText)
 
 #Change Sexuality responses to text
