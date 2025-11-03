@@ -1,0 +1,454 @@
+---
+title: "COMM W1 Demographics"
+author: "Hayleigh Armstrong"
+date: "11/02/2025"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+This script will process the data from the SONA W1 - Demographics Questionnaire.
+
+## Preliminary Steps
+
+Load packages:
+
+```{r, warning = FALSE, message = FALSE, include = FALSE}
+library(plyr)
+library(dplyr)
+library(tidyverse)
+library(tibble)
+library(Hmisc)
+library(psych)
+library(ggplot2)
+library(ggcorrplot)
+library(reshape2)
+library(lubridate)
+
+```
+
+Read in the data:
+```{r}
+#Hayleigh's Mac:
+df <- read.csv("/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv", na.strings=c("","NA"))
+
+```
+
+Subset the data to just the items from the Demographics Questionnaire and remove rows that have question headers:
+```{r}
+demo_scale <- subset(df, select = c(X, X.1, X.7, X.13:X.19, X.21:X.47))
+demo_scale <- demo_scale[-c(1,2,3,4),]
+head(demo_scale)
+```
+
+## Clean up the variables
+
+Rename the items:
+```{r}
+
+colnames(demo_scale)[colnames(demo_scale)=="X"] <- "StartDate"
+colnames(demo_scale)[colnames(demo_scale)=="X.1"] <- "EndDate"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.7"] <- "id"
+colnames(demo_scale)[colnames(demo_scale)=="X.13"] <- "GenderSelfDescribeText"
+colnames(demo_scale)[colnames(demo_scale)=="X.14"] <- "GenderTrajectory"
+colnames(demo_scale)[colnames(demo_scale)=="X.15"] <- "GenderTrajectoryNeitherCisgenderNorTransgenderText"
+colnames(demo_scale)[colnames(demo_scale)=="X.16"] <- "GenderTrajectoryUnsureText"
+colnames(demo_scale)[colnames(demo_scale)=="X.17"] <- "GenderBinaryRelation"
+colnames(demo_scale)[colnames(demo_scale)=="X.18"] <- "GenderNietherBinaryNorNonbinaryText"
+colnames(demo_scale)[colnames(demo_scale)=="X.19"] <- "GenderBinaryRelationUnsureText"
+
+# Column X.20 was deleted as it was blank
+
+colnames(demo_scale)[colnames(demo_scale)=="X.21"] <- "SexualityAsexualAceSpectrum"
+colnames(demo_scale)[colnames(demo_scale)=="X.22"] <- "SexualityBisexual"
+colnames(demo_scale)[colnames(demo_scale)=="X.23"] <- "SexualityGay"
+colnames(demo_scale)[colnames(demo_scale)=="X.24"] <- "SexualityLesbian"
+colnames(demo_scale)[colnames(demo_scale)=="X.25"] <- "SexualityPansexual"
+colnames(demo_scale)[colnames(demo_scale)=="X.26"] <- "SexualityQueer"
+colnames(demo_scale)[colnames(demo_scale)=="X.27"] <- "SexualityStraightHeterosexual"
+colnames(demo_scale)[colnames(demo_scale)=="X.28"] <- "SexualityPreferNotToSay"
+colnames(demo_scale)[colnames(demo_scale)=="X.29"] <- "SexualitySelfDescribeText"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.30"] <- "BirthMonth"
+colnames(demo_scale)[colnames(demo_scale)=="X.31"] <- "BirthYear"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.32"] <- "EthnicityAsian"
+colnames(demo_scale)[colnames(demo_scale)=="X.33"] <- "EthnicityBlackAfrican"
+colnames(demo_scale)[colnames(demo_scale)=="X.34"] <- "EthnicityHispanicLatino"
+colnames(demo_scale)[colnames(demo_scale)=="X.35"] <- "EthnicityIndigenous"
+colnames(demo_scale)[colnames(demo_scale)=="X.36"] <- "EthnicityMiddleEasternNorthAfrican"
+colnames(demo_scale)[colnames(demo_scale)=="X.37"] <- "EthnicityPacificIslander"
+colnames(demo_scale)[colnames(demo_scale)=="X.38"] <- "EthnicityWhiteEuropean"
+colnames(demo_scale)[colnames(demo_scale)=="X.39"] <- "EthnicityPreferNotToSay"
+colnames(demo_scale)[colnames(demo_scale)=="X.40"] <- "EthnicitySelfDescribeText"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.41"] <- "Ladder"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.42"] <- "Feedback"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.43"] <- "InternationalDomesticStudent"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.44"] <- "UndergradYear"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.45"] <- "PartOrFullTime"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.46"] <- "Faculty"
+
+colnames(demo_scale)[colnames(demo_scale)=="X.47"] <- "GPA"
+
+```
+
+Change/fix responses to be accurate/meaningful:
+```{r}
+#Change 0 to NA 
+demo_scale[demo_scale == 0] <- NA #Note this also changes several '0' responses in the GPA question to NA, will either need workaround or assume that is a 'no response' since I don't think you can be enrolled with a 0 GPA
+
+#Change Gender Identity responses to text 
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 1] <- "trans/transgender"
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 2] <- "cisgender"
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 3] <- "neither_transgender_nor_cisgender"
+demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 4] <- "unsure_gender_trajectory"
+demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText[demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText %in% c("h","n")] <- NA
+
+demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 1] <- "binary"
+demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 2] <- "nonbinary"
+demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 3] <- "niether_binary_nor_nonbinary"
+demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 4] <- "gender_binary_unsure"
+demo_scale$GenderNietherBinaryNorNonbinaryText[demo_scale$GenderNietherBinaryNorNonbinaryText %in% c("b","n")] <- NA
+
+#Change Gender SelfDescribe responses to be a consistent formatting:
+demo_scale$GenderSelfDescribeText <- tolower(trimws(demo_scale$GenderSelfDescribeText)) #removes extra spaces and turns responses lowercase
+# Create "man" category:
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("m", "male", "Male", "man")] <- "man"
+# Create "woman" category:
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c("w", "f", "female", "w", "woman", "woman, cisgender", "women")] <- "woman"
+# Assign nonsencial values as NA:
+demo_scale$GenderSelfDescribeText[demo_scale$GenderSelfDescribeText %in% c(".", "fe", "11", "age", "b", "f, fe", "february", "h", "j", "me", "y")] <- NA
+table(demo_scale$GenderSelfDescribeText)
+
+#Change Sexuality responses to text
+demo_scale$SexualityAsexualAceSpectrum[demo_scale$SexualityAsexualAceSpectrum == 1] <- "asexual"
+demo_scale$SexualityBisexual[demo_scale$SexualityBisexual == 1] <- "bisexual"
+demo_scale$SexualityGay[demo_scale$SexualityGay == 1] <- "gay"
+demo_scale$SexualityLesbian[demo_scale$SexualityLesbian == 1] <- "lesbian"
+demo_scale$SexualityPansexual[demo_scale$SexualityPansexual == 1] <- "pansexual"
+demo_scale$SexualityQueer[demo_scale$SexualityQueer == 1] <- "queer"
+demo_scale$SexualityStraightHeterosexual[demo_scale$SexualityStraightHeterosexual == 1] <- "straight/heterosexual"
+demo_scale$SexualityPreferNotToSay[demo_scale$SexualityPreferNotToSay == 1] <- NA
+
+
+#Change Ethnicity responses to text
+
+demo_scale$EthnicityAsian[demo_scale$EthnicityAsian == 1] <- "Asian"
+demo_scale$EthnicityBlackAfrican[demo_scale$EthnicityBlackAfrican == 1] <- "Black/African"
+demo_scale$EthnicityHispanicLatino[demo_scale$EthnicityHispanicLatino == 1] <- "Hispanic/Latino"
+demo_scale$EthnicityIndigenous[demo_scale$EthnicityIndigenous == 1] <- "Indigenous"
+demo_scale$EthnicityMiddleEasternNorthAfrican[demo_scale$EthnicityMiddleEasternNorthAfrican == 1] <- "Middle_Eastern/North_African"
+demo_scale$EthnicityPacificIslander[demo_scale$EthnicityPacificIslander == 1] <- "Pacific_Islander"
+demo_scale$EthnicityWhiteEuropean[demo_scale$EthnicityWhiteEuropean == 1] <- "White/European"
+demo_scale$EthnicityPreferNotToSay[demo_scale$EthnicityPreferNotToSay == 1] <- NA
+
+
+#Ladder SES Q - Reverse code to match question text, came in backwards
+demo_scale$Ladder <- as.numeric(demo_scale$Ladder)
+#demo_scale$Ladder[demo_scale$Ladder == 11] <- NA (No prefer not to respond option) 
+demo_scale$Ladder <- 11 - demo_scale$Ladder
+
+#International or Domestic student status - change prefer not to respond option (3) to NA, Factor and make responses to text
+demo_scale$InternationalDomesticStudent[demo_scale$InternationalDomesticStudent == 3] <- NA
+demo_scale$InternationalDomesticStudent <- factor(demo_scale$InternationalDomesticStudent, levels = c(1,2), labels = c("International", "Domestic"))
+
+#Undergrad Year - Change 'prefer not to respond' option to NA
+demo_scale$UndergradYear[demo_scale$UndergradYear == 6] <- NA
+
+#Part or Full Time student - change prefer not to respond option (3) to NA, Factor and make responses to text
+demo_scale$PartOrFullTime[demo_scale$PartOrFullTime == 3] <- NA
+demo_scale$PartOrFullTime <- factor(demo_scale$PartOrFullTime, levels = c(1,2), labels = c("Part", "Full"))
+
+#Faculty - change prefer not to respond option (8) to NA
+demo_scale$Faculty[demo_scale$Faculty == 8] <- NA
+
+```
+
+Age math:
+```{r}
+#Option 1:
+
+# Convert entries for BirthMonth to numeric values:
+
+# Step 1: Remove spaces and make lowercase
+demo_scale$BirthMonth <- tolower(trimws(demo_scale$BirthMonth))
+
+# Step 2: Convert numeric strings to numbers
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% as.character(1:12)] <- as.numeric(demo_scale$BirthMonth[demo_scale$BirthMonth %in% as.character(1:12)])
+
+
+# Step 3: Convert month names/abbreviations - use table() function to look for "weird" entries
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("january", "jan")] <- 1
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("february", "feb")] <- 2
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("march", "mar")] <- 3
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("april", "apr")] <- 4
+demo_scale$BirthMonth[demo_scale$BirthMonth == "may"] <- 5
+demo_scale$BirthMonth[demo_scale$BirthMonth == "june"] <- 6
+demo_scale$BirthMonth[demo_scale$BirthMonth == "july"] <- 7
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("august", "aug")] <- 8
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("september", "sep", "sept", "sepg", "septemner")] <- 9
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("october", "oct")] <- 10
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("november", "nov", "novem", "novembef")] <- 11
+demo_scale$BirthMonth[demo_scale$BirthMonth %in% c("december", "dec", "dece")] <- 12
+
+# Step 4: convert the column to numeric type
+demo_scale$BirthMonth <- as.numeric(demo_scale$BirthMonth)
+
+table(demo_scale$BirthMonth) # check to make sure
+
+# Clean up BirthYear column to keep 4-digit numbers
+demo_scale <- demo_scale %>%
+  mutate(
+    # Remove extra spaces and convert to character string temporarily
+    BirthYear = trimws(as.character(BirthYear)),
+    # Keep only 4-digit numbers, anything else NA (e.g., "22")
+    BirthYear = ifelse(grepl("^[0-9]{4}$", BirthYear), 
+                       as.numeric(BirthYear), 
+                       NA),
+    BirthYear = ifelse(BirthYear > 2006, NA, BirthYear)   # remove unrealistic years - 3 people who entered birth date as 2021 or 2022 - exclude them 
+  )
+
+table(demo_scale$BirthYear) # check to make sure. 
+
+# Concatenate month and year data:
+demo_scale$BirthMonth_Year <- paste(demo_scale$BirthYear, "-", demo_scale$BirthMonth)
+typeof(demo_scale$BirthMonth_Year)
+
+# Remove spaces
+demo_scale$BirthMonth_Year <- gsub(" ", "", demo_scale$BirthMonth_Year, fixed = TRUE)
+
+# Turn into date format
+demo_scale$BirthMonth_Year <- ym(demo_scale$BirthMonth_Year)
+
+# Truncate the `StartDate` variable so it contains only year and month information:
+demo_scale$StartDate2 <- demo_scale$StartDate
+typeof(demo_scale$StartDate2)
+
+# Keep just the X characters from the left (ymd)
+demo_scale$StartDate2 <-substr(demo_scale$StartDate2, 1, 10)
+demo_scale$StartDate2 <- as.Date(demo_scale$StartDate2, format = "%m/%d/%Y")
+typeof(demo_scale$StartDate2)
+```
+
+Do some calendar math to calculate age:
+```{r}
+demo_scale$Age_Days <- demo_scale$StartDate2 - demo_scale$BirthMonth_Year
+
+# note: there may be a more precise way to calculate this with lubridate given that not all years are 365 days in length
+demo_scale$Age_Years <- demo_scale$Age_Days/365.25
+# Strip days
+demo_scale$Age_Years <-substr(demo_scale$Age_Years, 1, 8)
+demo_scale$Age_Years <- as.numeric(demo_scale$Age_Years)
+describe(demo_scale$Age_Years)
+
+# Calculate age in years using lubridate.
+demo_scale$Age_Years2 <-year(as.period(interval(demo_scale$BirthMonth_Year, demo_scale$StartDate2)))
+
+demo_scale$Age_Years2 <- car::recode(demo_scale$Age_Years2, "'4' = 18")
+
+describe(demo_scale$Age_Years2)
+
+```
+
+GPA. Note that we can use the information at [this site](https://students.ok.ubc.ca/academic-success/grades-performance/) to convert percentage to GPA when manually recoding. Hardcode any percentages to GPA!
+```{r}
+
+# Check out all responses in a table:
+table(demo_scale$GPA)
+
+# P63f450f75cff4b0b29e0c2ae wrote "4.1 but I think it will go down after this semester" for their GPA. Change this to "4.1".
+demo_scale$GPA[demo_scale$id == "63f450f75cff4b0b29e0c2ae"] <- 4.1
+
+# P63df325dc4c1eb0b4368c26b wrote "3.0 on a 4 scale, Average 86.5" for their GPA. Not sure? Converting a 3.0 on a 4.0 scale to 4.33 scale would be average of 75%? Change to NA.
+demo_scale$GPA[demo_scale$id == "63df325dc4c1eb0b4368c26b"] <- NA
+
+# P67354782645ca7ce453b0c72 wrote "2.8/3?". Change to NA
+demo_scale$GPA[demo_scale$id == "67354782645ca7ce453b0c72"] <- NA
+
+# P67120e498f27e709d422380e wrote "I’m not sure! Maybe around 3.7". Change to NA
+demo_scale$GPA[demo_scale$id == "67120e498f27e709d422380e"] <- NA
+demo_scale <- demo_scale %>%
+  mutate(
+    # Remove everything except digits and decimal points - some people put % signs
+    GPA = gsub("[^0-9.]", "", GPA))
+
+demo_scale$GPA <- as.numeric(demo_scale$GPA)
+demo_scale$GPA <- round(demo_scale$GPA, digits = 1)
+#Get list of all unique values:
+gpa <- unique(demo_scale$GPA)
+gpa <- sort(gpa, decreasing = TRUE)
+gpa
+#GPAs that need to be corrected include the following values in the following manner, following the equivalency table at (https://students.ok.ubc.ca/academic-success/grades-performance/):
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 4.3, 89)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 4.1, 87)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 4.0, 86) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.9, 84) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.8, 82) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.7, 80) 
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.6, 79)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.5, 78)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.4, 77)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.3, 76)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.2, 75)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 3.0, 73)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.9, 71)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.8, 70)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.7, 69)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.6, 67)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.5, 65)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.4, 64)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 2.0, 60)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 1.8, 58)
+demo_scale$GPA <- mapvalues(demo_scale$GPA, 1.0, 50)
+
+table(demo_scale$GPA)
+#change non-meaningful responses to NA (assuming 0 is non-response)
+demo_scale$GPA[demo_scale$GPA == 0] <- NA
+demo_scale$GPA[demo_scale$GPA == 5] <- NA #One participant simply entered 5
+
+
+```
+
+Faculty Question Key:
+
+* 1 = 'Irving K. Barber Faculty of Arts and Social Sciences' 
+* 2 = 'Irving K. Barber Faculty of Science' 
+* 3 = 'Faculty of Creative and Critical Studies' 
+* 4 = 'Okanagan School of Education' 
+* 5 = 'School of Engineering' 
+* 6 = 'Faculty of Health and Social Development' 
+* 7 = 'Faculty of Management' 
+* 8 = 'Prefer not to answer'
+
+
+
+Participant 672e088407bba7b95127376e responded 'niether cisgender nor transgender' to gender trajectory question and then "Iam a male" in self describe. Changed both columns to NA
+```{r}
+
+demo_scale <- demo_scale %>%
+  mutate(
+    GenderTrajectoryNeitherCisgenderNorTransgenderText = if_else(id == "672e088407bba7b95127376e" & GenderTrajectoryNeitherCisgenderNorTransgenderText == "Iam a male",
+      NA, GenderTrajectoryNeitherCisgenderNorTransgenderText),
+    GenderTrajectory = 
+      if_else(id == "672e088407bba7b95127376e" & GenderTrajectory == "neither_transgender_nor_cisgender",
+      NA, 
+      GenderTrajectory))
+
+```
+
+Participant 650bbd883de9e376c0d0d7cd responded 'niether cisgender nor transgender' to gender trajectory question and then "Straight" in self describe. Changed both columns to NA
+```{r}
+demo_scale <- demo_scale %>%
+  mutate(
+    GenderTrajectoryNeitherCisgenderNorTransgenderText = if_else(id == "650bbd883de9e376c0d0d7cd" & GenderTrajectoryNeitherCisgenderNorTransgenderText == "Straight",
+      NA, GenderTrajectoryNeitherCisgenderNorTransgenderText),
+    GenderTrajectory = 
+      if_else(id == "650bbd883de9e376c0d0d7cd" & GenderTrajectory == "neither_transgender_nor_cisgender",
+      NA, 
+      GenderTrajectory))
+```
+
+
+Concatenate into single column for each multiple response option question:
+```{r}
+
+#Gender Identity
+demo_scale <- demo_scale %>%
+  unite("GenderIdentity", c("GenderSelfDescribeText":"GenderNietherBinaryNorNonbinaryText","GenderBinaryRelationUnsureText"), sep= "-", 
+        remove = FALSE, na.rm = TRUE)
+
+#Sexual Orientation
+demo_scale <- demo_scale %>%
+  unite("SexualOrientation", c("SexualityAsexualAceSpectrum":"SexualityPreferNotToSay","SexualitySelfDescribeText"), sep= "-", 
+        remove = FALSE, na.rm = TRUE)
+demo_scale$SexualOrientation[demo_scale$SexualOrientation == ""] <- NA
+
+#Ethnicity
+demo_scale <- demo_scale %>%
+  unite("Ethnicity", c("EthnicityAsian":"EthnicityPreferNotToSay","EthnicitySelfDescribeText"), sep= "-", 
+        remove = FALSE, na.rm = TRUE)
+
+```
+
+Calculate a variable indicating sexual and gender minority (SGM) status. We want to code everyone who indicated both cisgender, binary, and heterosexual into `0` and everyone else into `1`.
+```{r}
+# First recode to a gender minority variable. Note that this is using car, not dplyr
+
+demo_scale$gender_selfdescribe_minority <- car::recode(
+  demo_scale$GenderSelfDescribeText,
+  "'woman' = 0; 'man' = 0; else = 1"
+)
+                                                      
+
+demo_scale$gender_trajectory_minority <- car::recode(demo_scale$GenderTrajectory, "'cisgender' = 0; 
+                             'trans/transgender' = 1; 
+                             'neither_transgender_nor_cisgender' = 1; 
+                             'unsure_gender_trajectory' = 1")
+
+demo_scale$gender_binary_minority <- car::recode(demo_scale$GenderBinaryRelation, "'binary' = 0; 
+                             'nonbinary' = 1; 
+                             'niether_binary_nor_nonbinary' = 1; 
+                             'gender_binary_unsure' = 1")
+
+# Now recode sexual_orientation into a sexual minority indicator
+demo_scale$sexual_minority <- car::recode(
+  demo_scale$SexualOrientation, 
+  "'straight/heterosexual' = 0; else = 1")
+
+# --- Ensure all are numeric ---
+demo_scale <- demo_scale %>%
+  mutate(
+    across(
+      c(gender_selfdescribe_minority,
+        gender_trajectory_minority,
+        gender_binary_minority,
+        sexual_minority),
+      as.numeric))
+
+# --- Create Overall Sexual/Gender Minority (SGM) variable ---
+demo_scale$sgm <- pmax(
+  demo_scale$gender_selfdescribe_minority,
+  demo_scale$gender_trajectory_minority,
+  demo_scale$gender_binary_minority,
+  demo_scale$sexual_minority,
+  na.rm = TRUE
+)
+                  
+# Make sure all NA rows (if all 4 inputs are NA) stay NA
+demo_scale$sgm[is.na(demo_scale$gender_selfdescribe_minority) &
+               is.na(demo_scale$gender_trajectory_minority) &
+               is.na(demo_scale$gender_binary_minority) &
+               is.na(demo_scale$sexual_minority)] <- NA
+
+# --- Check distribution ---
+table(demo_scale$sgm, useNA = "ifany")
+
+```
+
+
+
+## Save the file
+
+Save cleaned datasets:
+```{r}
+#Write to Hayleigh's Mac:
+write.csv(demo_scale,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SONA W1 Demographics Cleaned Full Part 1.csv')
+
+# Second dataset with just one column per question plus GSM:
+demo_core <- subset(demo_scale, select = c(id, sgm, GenderIdentity, SexualOrientation, Ethnicity, Age_Years, Ladder, InternationalDomesticStudent, UndergradYear, PartOrFullTime, Faculty, GPA))
+write.csv(demo_core,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SONA W1 Demographics Cleaned Short Part 1.csv')
+
+#Write to Jess's Mac: 
+
+
+```
