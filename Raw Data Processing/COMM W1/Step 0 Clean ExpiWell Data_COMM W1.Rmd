@@ -92,5 +92,5 @@ Save the data file. This is the file to read in to all COMM W1 ExpiWell variable
 write.csv(df,'/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_COMM_W1/SEEDS COMM W1 Demographics ExpiWell Data Cleaned.csv')
 
 # On Jess's Mac:
-# write.csv(df,"/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS SONA W1 Demographics ExpiWell Data Cleaned.csv")
+# write.csv(df,"/Volumes/Emotion Dynamics Lab/PEARS/Data/SEEDS/PEARS_SEEDS_Demographics___Daily_Surveys_SONA_W1/SEEDS COMM W1 Demographics ExpiWell Data Cleaned.csv")
 ```
