@@ -231,7 +231,6 @@ Now, do MI for subscale mean and sum scores.
 
 Difficulty identifying feelings (DIF) (MI)
 ```{r}
-
 #MI
 # Impute missing values for participants who responded to at least 50% of the sub-scale items (4 items).
 # Items 1, 3, 6, 7, 9, 13, 14
@@ -247,38 +246,87 @@ tas_scale.na_dif <- subset(tas_scale.na_dif, select = -c(id, tas_2, tas_4, tas_5
 #Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
 
 # Count the number of non-missing items per participant
-num_items <- ncol(df_scale.na_reap)
+num_items <- ncol(tas_scale.na_dif)
 min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
 
 # Impute row means only for participants who answered >= 50% of items
-for(i in 1:nrow(df_scale.na_reap)) {
-  non_missing_count <- sum(!is.na(df_scale.na_reap[i, ]))
+for(i in 1:nrow(tas_scale.na_dif)) {
+  non_missing_count <- sum(!is.na(tas_scale.na_dif[i, ]))
   
 if(non_missing_count >= min_items_needed) {
     # Impute missing values with row mean
-    df_scale.na_reap[i, ][is.na(df_scale.na_reap[i, ])] <- mean(as.numeric(df_scale.na_reap[i, ]), na.rm = TRUE)
+    tas_scale.na_dif[i, ][is.na(tas_scale.na_dif[i, ])] <- mean(as.numeric(tas_scale.na_dif[i, ]), na.rm = TRUE)
   } else {
     # If less than 50% answered, set all values to NA
-    df_scale.na_reap[i, ] <- NA
+    tas_scale.na_dif[i, ] <- NA
   }
 }
 
 #Round the values back to whole numbers:
-df_scale.na_reap <- round(df_scale.na_reap, digits=0)
+tas_scale.na_dif <- round(tas_scale.na_dif, digits=0)
 
 #Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
-df_scale.na_reap$ress_reappraisal_sum_MI <- apply(df_scale.na_reap[,paste0(c("ress_3", "ress_12", "ress_15", "ress_23"))], 1, sum)
-df_scale.na_reap$ress_reappraisal_mean_MI <- apply(df_scale.na_reap[,paste0(c("ress_3", "ress_12", "ress_15", "ress_23"))], 1, mean)
+tas_scale.na_dif$tas_diff_id_sum_MI <- apply(tas_scale.na_dif[,paste0(c("tas_1", "tas_3", "tas_6", "tas_7", "tas_9", "tas_13", "tas_14"))], 1, sum)
+tas_scale.na_dif$tas_diff_id_mean_MI <- apply(tas_scale.na_dif[,paste0(c("tas_1", "tas_3", "tas_6", "tas_7", "tas_9", "tas_13", "tas_14"))], 1, mean)
 
 #Put the IDs back into the data frame:
-df_scale.na_reap$id <- id.list
+tas_scale.na_dif$id <- id.list
 
 #Put the MI columns back into the original data frame
-df_scale$ress_reappraisal_mean_MI <- df_scale.na_reap$ress_reappraisal_mean_MI
-df_scale$ress_reappraisal_sum_MI  <- df_scale.na_reap$ress_reappraisal_sum_MI
+tas_scale$tas_diff_id_mean_MI <- tas_scale.na_dif$tas_diff_id_mean_MI
+tas_scale$tas_diff_id_sum_MI  <- tas_scale.na_dif$tas_diff_id_sum_MI
+```
+
+Difficulty describing feelings (DDF) (MI)
+```{r}
+#MI
+# Impute missing values for participants who responded to at least 50% of the sub-scale items (3 items).
+# Items 2, 4, 11, 12, 17
+
+# First, pull out columns we do not want used in the mean imputation:
+# Pull out the id column:
+tas_scale.na_ddf <- tas_scale
+id.list <- tas_scale.na_ddf$id
+
+#Remove columns we don't want to include in the mean imputation:
+tas_scale.na_ddf <- subset(tas_scale.na_ddf, select = -c(id, tas_1, tas_3, tas_5:tas_10, tas_13:tas_16, tas_18:tas_20, tas_sum, tas_mean, tas_mean_MI, tas_sum_MI, tas_diff_id_mean, tas_diff_id_sum, tas_diff_describ_mean, tas_diff_describ_sum, tas_ext_think_mean, tas_ext_think_sum, tas_diff_id_mean_MI, tas_diff_id_sum_MI))
+
+#Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+
+# Count the number of non-missing items per participant
+num_items <- ncol(tas_scale.na_dif)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
+for(i in 1:nrow(tas_scale.na_dif)) {
+  non_missing_count <- sum(!is.na(tas_scale.na_dif[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    tas_scale.na_dif[i, ][is.na(tas_scale.na_dif[i, ])] <- mean(as.numeric(tas_scale.na_dif[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    tas_scale.na_dif[i, ] <- NA
+  }
+}
+
+#Round the values back to whole numbers:
+tas_scale.na_dif <- round(tas_scale.na_dif, digits=0)
+
+#Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
+tas_scale.na_dif$tas_diff_id_sum_MI <- apply(tas_scale.na_dif[,paste0(c("tas_1", "tas_3", "tas_6", "tas_7", "tas_9", "tas_13", "tas_14"))], 1, sum)
+tas_scale.na_dif$tas_diff_id_mean_MI <- apply(tas_scale.na_dif[,paste0(c("tas_1", "tas_3", "tas_6", "tas_7", "tas_9", "tas_13", "tas_14"))], 1, mean)
+
+#Put the IDs back into the data frame:
+tas_scale.na_dif$id <- id.list
+
+#Put the MI columns back into the original data frame
+tas_scale$tas_diff_id_mean_MI <- tas_scale.na_dif$tas_diff_id_mean_MI
+tas_scale$tas_diff_id_sum_MI  <- tas_scale.na_dif$tas_diff_id_sum_MI
+```
 
 
-
+```{r}
 ```{r}
 # Reorder columns
 tas_scale3 <- tas_scale3[, c("id", paste0("tas_", 1:20),
