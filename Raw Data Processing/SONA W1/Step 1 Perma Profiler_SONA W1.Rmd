@@ -83,6 +83,8 @@ missing_summary <- perma_scale %>%
   arrange(desc(pct_missing))
 
 missing_summary
+
+# Note: We decided to not do mean imputation for this scale.
 ```
 
 Variables are pulled in as factors and we want to make them numeric values: 
