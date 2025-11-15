@@ -490,6 +490,7 @@ df_scale <- df_scale %>%
   )
 ```
 
+
 Save the data file:
 ```{r, eval = FALSE}
 #Write to Hayleigh's Mac:
@@ -560,7 +561,9 @@ psych::alpha(distraction)
 Create a new object containing only the subscales:
 
 ```{r}
-df_1 <- subset(df_scale, select = c("ress_rumination_mean", "ress_engagement_mean" , "ress_reappraisal_mean" , "ress_suppression_mean" , "ress_relaxation_mean" , "ress_distraction_mean"))
+df_1_orig <- subset(df_scale, select = c("ress_rumination_mean_orig", "ress_engagement_mean_orig", "ress_reappraisal_mean_orig", "ress_suppression_mean_orig", "ress_relaxation_mean_orig", "ress_distraction_mean_orig"))
+
+df_1_MI <- subset(df_scale, select = c("ress_rumination_mean_MI", "ress_engagement_mean_MI" , "ress_reappraisal_mean_MI" , "ress_suppression_mean_MI" , "ress_relaxation_mean_MI" , "ress_distraction_mean_MI"))
 ```
 
 ### Descriptive statistics for subscales
@@ -568,43 +571,50 @@ df_1 <- subset(df_scale, select = c("ress_rumination_mean", "ress_engagement_mea
 ```{r}
 # for subscales
 
-describe(df_1)
+describe(df_1_orig)
+describe(df_1_MI)
 ```
 
 ### Histograms
 
 Rumination subscale
 ```{r, warning = FALSE, message = FALSE}
-qplot(df_scale$ress_rumination_mean, geom="histogram") 
+qplot(df_scale$ress_rumination_mean_orig, geom="histogram") 
+qplot(df_scale$ress_rumination_mean_MI, geom="histogram") 
 
 ```
 
 Engagement subscale
 ```{r, warning = FALSE, message = FALSE}
-qplot(df_scale$ress_engagement_mean, geom="histogram") 
+qplot(df_scale$ress_engagement_mean_orig, geom="histogram") 
+qplot(df_scale$ress_engagement_mean_MI, geom="histogram")
 
 ```
 Reappraisal subscale
 ```{r, warning = FALSE, message = FALSE}
 
-qplot(df_scale$ress_reappraisal_mean, geom="histogram") 
+qplot(df_scale$ress_reappraisal_mean_orig, geom="histogram") 
+qplot(df_scale$ress_reappraisal_mean_MI, geom="histogram") 
 
 ```
 Suppression subscale
 ```{r, warning = FALSE, message = FALSE}
 
-qplot(df_scale$ress_suppression_mean, geom="histogram") 
+qplot(df_scale$ress_suppression_mean_orig, geom="histogram")
+qplot(df_scale$ress_suppression_mean_MI, geom="histogram") 
 
 ```
 Relaxation subscale
 ```{r, warning = FALSE, message = FALSE}
 
-qplot(df_scale$ress_relaxation_mean, geom="histogram") 
+qplot(df_scale$ress_relaxation_mean_orig, geom="histogram")
+qplot(df_scale$ress_relaxation_mean_MI, geom="histogram")
 
 ```
 Distraction subscale
 ```{r, warning = FALSE, message = FALSE}
 
-qplot(df_scale$ress_distraction_mean, geom="histogram") 
+qplot(df_scale$ress_distraction_mean_orig, geom="histogram")
+qplot(df_scale$ress_distraction_mean_MI, geom="histogram") 
 
 ```
