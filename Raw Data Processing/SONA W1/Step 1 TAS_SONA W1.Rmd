@@ -114,7 +114,7 @@ tas_scale <- tas_scale %>%
 
 Calculate the sum scores of Toronto Alexthymia Scale and Subscales, in line with the instructions described in (https://contextualscience.org/toronto_alexithymia_scale_tas20)
 
-First, calculate the sum and the mean scores:
+First, calculate the sum and the mean scores (non-MI):
 ```{r}
 
 # Total alexithymia score = sum all subscales
@@ -127,7 +127,7 @@ label(tas_scale$tas_sum) <- "sum of tas items"
 label(tas_scale$tas_mean) <- "mean of tas items"
 ```
 
-Calculate sum and mean scores of the 3 subscales:
+Calculate sum and mean scores of the 3 subscales (non-MI):
 ```{r}
 
 # Factor I: Difficulty identifying feelings (Items 1, 3, 6, 7, 9, 13, 14)
@@ -154,7 +154,6 @@ label(tas_scale$tas_ext_think_mean) <- "mean of externally-oriented thinking ite
 ```
 
 ### Look at missing data - impute means for missing values
-## Edit it so data is only imputed for Ps who responded to at least 50% of the items
 
 ```{r}
 
@@ -177,7 +176,7 @@ tas_scale.na <- tas_scale
 id.list <- tas_scale.na$id
 
 # Now remove the columns we don't want to be part of the mean imputation 
-tas_scale.na <- subset(tas_scale.na, select= -c(id, tas_sum, tas_mean)) #Note from Jess: remove subscales too
+tas_scale.na <- subset(tas_scale.na, select= -c(id, tas_sum, tas_mean, tas_diff_id_mean, tas_diff_id_sum, tas_diff_describ_sum, tas_diff_describ_mean, tas_ext_think_mean, tas_ext_think_sum)) 
 
 ```
 
