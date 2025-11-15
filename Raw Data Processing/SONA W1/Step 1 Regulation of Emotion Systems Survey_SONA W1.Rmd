@@ -179,7 +179,7 @@ df_scale$ress_rumination_sum_MI  <- df_scale.na_rum$ress_rumination_sum_MI
 
 ```
 
-Engagement:
+Engagement (non-MI):
 ```{r}
 
 df_scale <- mutate(df_scale, ress_engagement_sum = ress_2 + ress_5 + ress_11 + ress_20)
@@ -190,6 +190,56 @@ label(df_scale[["ress_engagement_sum"]]) <- "sum of ress engagement items"
 label(df_scale[["ress_engagement_mean"]]) <- "mean of ress engagement items"
 
 ```
+
+Engagement (MI)
+```{r}
+#MI
+# Impute missing values for participants who responded to at least 50% of the sub-scale items (2 items).
+# ress_2 + ress_5 + ress_11 + ress_20
+
+# First, pull out columns we do not want used in the mean imputation:
+# Pull out the id column:
+df_scale.na_eng <- df_scale
+id.list <- df_scale.na_eng$id
+#Remove columns we don't want to include in the mean imputation:
+df_scale.na_eng <- subset(df_scale.na_eng, select = -c(id, ress_1, ress_3, ress_4, ress_6:ress_10, ress_12:ress_19, ress_21:ress_24, ress_rumination_sum, ress_rumination_mean, ress_rumination_sum_MI, ress_rumination_mean_MI, ress_engagement_mean, ress_engagement_sum))
+
+#Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+
+# Count the number of non-missing items per participant
+num_items <- ncol(df_scale.na_eng)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
+for(i in 1:nrow(df_scale.na_eng)) {
+  non_missing_count <- sum(!is.na(df_scale.na_eng[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    df_scale.na_eng[i, ][is.na(df_scale.na_eng[i, ])] <- mean(as.numeric(df_scale.na_eng[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    df_scale.na_eng[i, ] <- NA
+  }
+}
+
+#Round the values back to whole numbers:
+df_scale.na_eng <- round(df_scale.na_eng, digits=0)
+
+#Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
+df_scale.na_eng$ress_engagement_sum_MI <- apply(df_scale.na_eng[,paste0(c("ress_2", "ress_5", "ress_11", "ress_20"))], 1, sum)
+df_scale.na_eng$ress_engagement_mean_MI <- apply(df_scale.na_eng[,paste0(c("ress_2", "ress_5", "ress_11", "ress_20"))], 1, mean)
+
+#Put the IDs back into the data frame:
+df_scale.na_eng$id <- id.list
+
+#Put the MI columns back into the original data frame
+df_scale$ress_engagement_mean_MI <- df_scale.na_eng$ress_engagement_mean_MI
+df_scale$ress_engagement_sum_MI  <- df_scale.na_eng$ress_engagement_sum_MI
+
+
+```
+
 
 Reappraisal
 ```{r}
