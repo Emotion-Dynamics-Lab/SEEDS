@@ -450,35 +450,35 @@ df_scale.na_dis <- subset(df_scale.na_dis, select = -c(id, ress_1:ress_6, ress_8
 #Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
 
 # Count the number of non-missing items per participant
-num_items <- ncol(df_scale.na_rlx)
+num_items <- ncol(df_scale.na_dis)
 min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
 
 # Impute row means only for participants who answered >= 50% of items
-for(i in 1:nrow(df_scale.na_rlx)) {
-  non_missing_count <- sum(!is.na(df_scale.na_rlx[i, ]))
+for(i in 1:nrow(df_scale.na_dis)) {
+  non_missing_count <- sum(!is.na(df_scale.na_dis[i, ]))
   
 if(non_missing_count >= min_items_needed) {
     # Impute missing values with row mean
-    df_scale.na_rlx[i, ][is.na(df_scale.na_rlx[i, ])] <- mean(as.numeric(df_scale.na_rlx[i, ]), na.rm = TRUE)
+    df_scale.na_dis[i, ][is.na(df_scale.na_dis[i, ])] <- mean(as.numeric(df_scale.na_dis[i, ]), na.rm = TRUE)
   } else {
     # If less than 50% answered, set all values to NA
-    df_scale.na_rlx[i, ] <- NA
+    df_scale.na_dis[i, ] <- NA
   }
 }
 
 #Round the values back to whole numbers:
-df_scale.na_rlx <- round(df_scale.na_rlx, digits=0)
+df_scale.na_dis <- round(df_scale.na_dis, digits=0)
 
 #Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
-df_scale.na_rlx$ress_relaxation_sum_MI <- apply(df_scale.na_rlx[,paste0(c("ress_6", "ress_16", "ress_19", "ress_24"))], 1, sum)
-df_scale.na_rlx$ress_relaxation_mean_MI <- apply(df_scale.na_rlx[,paste0(c("ress_6", "ress_16", "ress_19", "ress_24"))], 1, mean)
+df_scale.na_dis$ress_distraction_sum_MI <- apply(df_scale.na_dis[,paste0(c("ress_7", "ress_10", "ress_17", "ress_22"))], 1, sum)
+df_scale.na_dis$ress_distraction_mean_MI <- apply(df_scale.na_dis[,paste0(c("ress_7", "ress_10", "ress_17", "ress_22"))], 1, mean)
 
 #Put the IDs back into the data frame:
-df_scale.na_rlx$id <- id.list
+df_scale.na_dis$id <- id.list
 
 #Put the MI columns back into the original data frame
-df_scale$ress_relaxation_mean_MI <- df_scale.na_rlx$ress_relaxation_mean_MI
-df_scale$ress_relaxation_sum_MI  <- df_scale.na_rlx$ress_relaxation_sum_MI
+df_scale$ress_distraction_mean_MI <- df_scale.na_dis$ress_distraction_mean_MI
+df_scale$ress_distraction_sum_MI  <- df_scale.na_dis$ress_distraction_sum_MI
 ```
 
 Save the data file:
