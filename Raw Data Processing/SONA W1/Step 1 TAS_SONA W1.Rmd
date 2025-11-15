@@ -1,7 +1,7 @@
 ---
 title: "Step 1 TAS_SONA W1"
 author: "Hayleigh Armstrong"
-date: "28/10/2025"
+date: "Last compiled on r format(Sys.time(), '%d %B, %Y')"
 output:
   html_document:
     number_sections: yes
@@ -155,6 +155,7 @@ label(tas_scale$tas_ext_think_mean) <- "mean of externally-oriented thinking ite
 
 ### Look at missing data - impute means for missing values
 ## Edit it so data is only imputed for Ps who responded to at least 50% of the items
+
 ```{r}
 
 missing_summary <- tas_scale %>%
@@ -168,6 +169,7 @@ missing_summary <- tas_scale %>%
 
 missing_summary
 ```
+
 Remove unneeded columns, including the ID so it doesn't get used in the mean imputation:
 ```{r}
 # First, pull out the ID column:
@@ -175,12 +177,14 @@ tas_scale.na <- tas_scale
 id.list <- tas_scale.na$id
 
 # Now remove the columns we don't want to be part of the mean imputation 
-tas_scale.na <- subset(tas_scale.na, select= -c(id, tas_sum, tas_mean))
+tas_scale.na <- subset(tas_scale.na, select= -c(id, tas_sum, tas_mean)) #Note from Jess: remove subscales too
 
 ```
 
 
 Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+
+Note from Jess: double check how this works and do separately (?) if needed for subscales
 ```{r}
 # Count the number of non-missing items per participant
 num_items <- ncol(tas_scale.na)
