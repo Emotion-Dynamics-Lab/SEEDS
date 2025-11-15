@@ -448,7 +448,9 @@ Reliability of difficulty describing feelings:
 
 ddf <- subset(tas_scale, select = c("tas_2" ,  "tas_4" , "tas_11" , "tas_12", "tas_17"))
 
-psych::alpha(ddf)
+ddf_alpha <- psych::alpha(ddf, check.keys = TRUE) #accounts for reversed score items
+ddf_alpha
+
 
 ```
 
@@ -457,7 +459,9 @@ Reliability of externally oriented thinking:
 
 eot <- subset(tas_scale, select = c("tas_5" ,  "tas_8" , "tas_10" , "tas_15", "tas_16", "tas_18", "tas_19", "tas_20"))
 
-psych::alpha(eot)
+eot_alpha <- psych::alpha(eot, check.keys = TRUE) #accounts for reversed score items
+eot_alpha
+
 ```
 Create a new object containing only the subscales:
 ```{r}
