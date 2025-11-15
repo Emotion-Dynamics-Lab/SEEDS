@@ -1,7 +1,7 @@
 ---
 title: "Step 1 SONA W1 BDI"
 author: "Hayleigh Armstrong"
-date: "06/10/2025"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     number_sections: yes
