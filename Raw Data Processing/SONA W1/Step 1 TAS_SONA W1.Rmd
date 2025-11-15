@@ -449,3 +449,47 @@ Reliability of difficulty describing feelings:
 ddf <- subset(tas_scale, select = c("tas_2" ,  "tas_4" , "tas_11" , "tas_12", "tas_17"))
 
 psych::alpha(ddf)
+
+```
+
+Reliability of externally oriented thinking:
+```{r}
+
+eot <- subset(tas_scale, select = c("tas_5" ,  "tas_8" , "tas_10" , "tas_15", "tas_16", "tas_18", "tas_19", "tas_20"))
+
+psych::alpha(eot)
+```
+Create a new object containing only the subscales:
+```{r}
+tas_1_orig <- subset(tas_scale, select = c("tas_diff_id_mean_orig", "tas_diff_describ_mean_orig", "tas_ext_think_mean_orig"))
+
+tas_1_MI <- subset(tas_scale, select = c("tas_diff_id_mean_MI", "tas_diff_describ_mean_MI", "tas_ext_think_mean_MI"))
+```
+
+### Descriptive statistics for subscales
+```{r}
+describe(tas_1_orig)
+describe(tas_1_MI)
+```
+
+### Histograms for subscales
+Difficulty identifying feelings subscale
+```{r, warning = FALSE, message = FALSE}
+qplot(tas_scale$tas_diff_id_mean_orig, geom="histogram") 
+qplot(tas_scale$tas_diff_id_mean_MI, geom="histogram") 
+
+```
+
+Difficulty describing feelings subscale
+```{r, warning = FALSE, message = FALSE}
+qplot(tas_scale$tas_diff_describ_mean_orig, geom="histogram") 
+qplot(tas_scale$tas_diff_describ_mean_MI, geom="histogram") 
+
+```
+
+Externally oriented thinking subscale
+```{r, warning = FALSE, message = FALSE}
+qplot(tas_scale$tas_ext_think_mean_orig, geom="histogram") 
+qplot(tas_scale$tas_ext_think_mean_MI, geom="histogram") 
+
+```
