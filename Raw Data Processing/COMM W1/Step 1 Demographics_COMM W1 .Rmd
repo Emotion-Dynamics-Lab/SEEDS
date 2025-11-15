@@ -102,10 +102,13 @@ demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 1] <- "trans/transgen
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 2] <- "cisgender"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 3] <- "neither_transgender_nor_cisgender"
 demo_scale$GenderTrajectory[demo_scale$GenderTrajectory == 4] <- "unsure_gender_trajectory"
-#For "GenderTrajectoryNeitherCisgenderNorTransgenderText", 2 participants answered "male"/"Male", change these to NA:
-demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText[demo_scale$GenderTrajectoryNeitherCisgenderNorTransgenderText %in% c("male","Male ")] <- NA
-# Check other responses next time I run
-
+#For "GenderTrajectoryNeitherCisgenderNorTransgenderText", 2 participants answered "male"/"Male", change these participants' gender trajectory responses to NA:
+demo_scale[demo_scale$id == "6801743c3df92472ed0ca4cd", 
+           c("GenderTrajectoryNeitherCisgenderNorTransgenderText", 
+             "GenderTrajectory")] <- NA
+demo_scale[demo_scale$id == "68079a6d08fd72522057c691", 
+           c("GenderTrajectoryNeitherCisgenderNorTransgenderText", 
+             "GenderTrajectory")] <- NA
 
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 1] <- "binary"
 demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 2] <- "nonbinary"
@@ -114,6 +117,10 @@ demo_scale$GenderBinaryRelation[demo_scale$GenderBinaryRelation == 4] <- "gender
 # 1 participant was confused by the gender binary question. Change their answers to NA
 demo_scale[demo_scale$id == "6803418d3df92472ed22e910", 
            c("GenderBinaryRelationUnsureText", 
+             "GenderBinaryRelation")] <- NA
+# 1 participant answered "Nothing much" to the gender binary question. Change their answers to NA
+demo_scale[demo_scale$id == "681a4ba207710cff0ab2216f", 
+           c("GenderNietherBinaryNorNonbinaryText", 
              "GenderBinaryRelation")] <- NA
 
 #Change Gender SelfDescribe responses to be a consistent formatting:
@@ -194,19 +201,25 @@ table(demo_scale$BirthMonth) # check to make sure
 
 # START HERE NEXT
 
+# Clean up BirthYear column 
+# Remove extra spaces and convert to character string temporarily
+demo_scale$BirthYear <- trimws(as.character(demo_scale$BirthYear))
+
+# Manually code any entries that need to be fixed
+demo_scale$BirthYear[demo_scale$BirthYear %in% c(".2007", "2007", "20073")] <- "2007"
+demo_scale$BirthYear[demo_scale$BirthYear %in% c("00", "2000")] <- "2000"
+demo_scale$BirthYear[demo_scale$BirthYear %in% c("01", "2001")] <- "2001"
+
 # Clean up BirthYear column to keep 4-digit numbers
 demo_scale <- demo_scale %>%
   mutate(
-    # Remove extra spaces and convert to character string temporarily
-    BirthYear = trimws(as.character(BirthYear)),
-    # Keep only 4-digit numbers, anything else NA (e.g., "22")
     BirthYear = ifelse(grepl("^[0-9]{4}$", BirthYear), 
                        as.numeric(BirthYear), 
-                       NA),
-    BirthYear = ifelse(BirthYear > 2006, NA, BirthYear)   # remove unrealistic years - 3 people who entered birth date as 2021 or 2022 - exclude them 
-  )
+                       NA))
 
-table(demo_scale$BirthYear) # check to make sure. 
+table(demo_scale$BirthYear) # check to make sure.
+
+# NOTE: There are 36 participants born before 2000. We decided to include them, but we will need to review this when writing our paper (i.e., is the focus on emerging adults or adults more generally?)
 
 # Concatenate month and year data:
 demo_scale$BirthMonth_Year <- paste(demo_scale$BirthYear, "-", demo_scale$BirthMonth)
