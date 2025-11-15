@@ -119,16 +119,63 @@ df_scale[df_scale == 6] <- NA
 
 ### Calculate the standard mean and sum of subscales
 
-#### Sum and mean scores of subscale. 
+#### Sum and mean scores of subscale (non-MI + MI). 
 
-Rumination:
+Rumination (Non-MI):
 ```{r}
+#Non-MI
 df_scale <- mutate(df_scale, ress_rumination_sum = ress_1 + ress_8 + ress_14 + ress_21)
 
 df_scale$ress_rumination_mean <- apply(df_scale[, c("ress_1", "ress_8", "ress_14", "ress_21")], 1, mean)
 
 label(df_scale[["ress_rumination_sum"]]) <- "sum of ress rumination items"
 label(df_scale[["ress_rumination_mean"]]) <- "mean of ress rumination items"
+```
+
+Rumination (MI)
+```{r}
+#MI
+# Impute missing values for participants who responded to at least 50% of the sub-scale items (2 items).
+
+# First, pull out columns we do not want used in the mean imputation:
+# Pull out the id column:
+df_scale.na_rum <- df_scale
+id.list <- df_scale.na_rum$id
+#Remove columns we don't want to include in the mean imputation:
+df_scale.na_rum <- subset(df_scale.na_rum, select = -c(id, ress_2:ress_7, ress_9:ress_13, ress_15:ress_20, ress_22:ress_24, ress_rumination_sum, ress_rumination_mean))
+
+#Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+
+# Count the number of non-missing items per participant
+num_items <- ncol(df_scale.na_rum)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
+for(i in 1:nrow(df_scale.na_rum)) {
+  non_missing_count <- sum(!is.na(df_scale.na_rum[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    df_scale.na_rum[i, ][is.na(df_scale.na_rum[i, ])] <- mean(as.numeric(df_scale.na_rum[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    df_scale.na_rum[i, ] <- NA
+  }
+}
+
+#Round the values back to whole numbers:
+df_scale.na_rum <- round(df_scale.na_rum, digits=0)
+
+#Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
+df_scale.na_rum$ress_rumination_sum_MI <- apply(df_scale.na_rum[,paste0(c("ress_1", "ress_8", "ress_14", "ress_21"))], 1, sum)
+df_scale.na_rum$ress_rumination_mean_MI <- apply(df_scale.na_rum[,paste0(c("ress_1", "ress_8", "ress_14", "ress_21"))], 1, mean)
+
+#Put the IDs back into the data frame:
+df_scale.na_rum$id <- id.list
+
+#Put the MI columns back into the original data frame
+df_scale$ress_rumination_mean_MI <- df_scale.na_rum$ress_rumination_mean_MI
+df_scale$ress_rumination_sum_MI  <- df_scale.na_rum$ress_rumination_sum_MI
 
 ```
 
