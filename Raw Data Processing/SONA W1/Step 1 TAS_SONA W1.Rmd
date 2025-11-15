@@ -178,6 +178,7 @@ id.list <- tas_scale.na$id
 # Now remove the columns we don't want to be part of the mean imputation 
 tas_scale.na <- subset(tas_scale.na, select= -c(id, tas_sum, tas_mean, tas_diff_id_mean, tas_diff_id_sum, tas_diff_describ_sum, tas_diff_describ_mean, tas_ext_think_mean, tas_ext_think_sum)) 
 
+
 ```
 
 
@@ -220,40 +221,16 @@ Put the IDs back into the data frame:
 ```{r}
 tas_scale.na$id <- id.list
 
+#Put the MI columns back into the original data frame
+tas_scale$tas_mean_MI <- tas_scale.na$tas_mean_MI
+tas_scale$tas_sum_MI  <- tas_scale.na$tas_sum_MI
 ```
 
-Now we need to merge the imputed cases back into the main data frame. We don't want to end up with duplicate rows of data for the cases that had missing values, so first we will remove these cases from the original data frame:
-```{r}
-tas_scale2 <- tas_scale[ ! tas_scale$id %in% id.list, ]
 
 ```
 
-Now add the newly-imputed cases back into the main data frame:
+
 ```{r}
-# Create columns in tas_scale that we will merge the mean-imputed data into
-tas_scale2$tas_sum_MI <-tas_scale2$tas_sum
-tas_scale2$tas_mean_MI <-tas_scale2$tas_mean
-
-# Create empty columns in tas_scale.na for the conventional mean and sum (not MI)
-tas_scale.na$tas_sum <-NA
-tas_scale.na$tas_mean <-NA
-
-# Order the columns to be consistent for merge
-col_order <- c("id", "tas_1", "tas_2", "tas_3", "tas_4", "tas_5", "tas_6", "tas_7", "tas_8", "tas_9", "tas_10","tas_11","tas_12", "tas_13","tas_14","tas_15", "tas_16", "tas_17", "tas_18", "tas_19","tas_20","tas_sum",  "tas_mean", "tas_sum_MI",  "tas_mean_MI", "tas_diff_id_sum", "tas_diff_id_mean", "tas_diff_describ_sum", "tas_diff_describ_mean", "tas_ext_think_sum", "tas_ext_think_mean")
-
-tas_scale2 <- tas_scale2[, col_order]
-tas_scale.na <- tas_scale.na[, col_order]
-
-# Merge the imputed cases back into tas_scale
-tas_scale3 <- rbind(tas_scale2, tas_scale.na)
-
-# Bring in the non-imputed mean and sum from df_scale, as well as subscale mean and sums
-tas_scale3 <- merge(tas_scale3,
-                   tas_scale[, c("id", "tas_sum", "tas_mean", "tas_diff_id_sum","tas_diff_id_mean", "tas_diff_describ_sum", "tas_diff_describ_mean", "tas_ext_think_sum", "tas_ext_think_mean")],
-                   by = "id",
-                   all.x = TRUE,
-                   suffixes = c("", "_orig"))
-
 # Reorder columns
 tas_scale3 <- tas_scale3[, c("id", paste0("tas_", 1:20),
                            "tas_sum_orig", "tas_mean_orig", "tas_diff_id_sum","tas_diff_id_mean", "tas_diff_describ_sum", "tas_diff_describ_mean", "tas_ext_think_sum", "tas_ext_think_mean",
