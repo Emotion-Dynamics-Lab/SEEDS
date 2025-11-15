@@ -481,6 +481,15 @@ df_scale$ress_distraction_mean_MI <- df_scale.na_dis$ress_distraction_mean_MI
 df_scale$ress_distraction_sum_MI  <- df_scale.na_dis$ress_distraction_sum_MI
 ```
 
+Rename non-imputed columns to have "_orig" suffix:
+```{r}
+df_scale <- df_scale %>%
+  rename_with(
+    ~ paste0(.x, "_orig"),
+    matches("^ress_.*_(sum|mean)$")
+  )
+```
+
 Save the data file:
 ```{r, eval = FALSE}
 #Write to Hayleigh's Mac:
