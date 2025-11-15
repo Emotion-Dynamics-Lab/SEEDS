@@ -421,7 +421,7 @@ df_scale$ress_relaxation_sum_MI  <- df_scale.na_rlx$ress_relaxation_sum_MI
 
 ```
 
-Distraction:
+Distraction (non-MI):
 ```{r}
 
 df_scale <- mutate(df_scale, ress_distraction_sum = ress_7 + ress_10 + ress_17 + ress_22)
@@ -431,6 +431,54 @@ df_scale$ress_distraction_mean <- apply(df_scale[, c("ress_7", "ress_10", "ress_
 label(df_scale[["ress_distraction_sum"]]) <- "sum of ress distraction items"
 label(df_scale[["ress_distraction_mean"]]) <- "mean of ress distraction items"
 
+```
+
+Distraction (MI):
+```{r}
+#MI
+# Impute missing values for participants who responded to at least 50% of the sub-scale items (2 items).
+# ress_7 + ress_10 + ress_17 + ress_22
+
+# First, pull out columns we do not want used in the mean imputation:
+# Pull out the id column:
+df_scale.na_dis <- df_scale
+id.list <- df_scale.na_dis$id
+
+#Remove columns we don't want to include in the mean imputation:
+df_scale.na_dis <- subset(df_scale.na_dis, select = -c(id, ress_1:ress_6, ress_8, ress_9, ress_11:ress_16, ress_18:ress_21, ress_23, ress_24, ress_rumination_sum, ress_rumination_mean, ress_rumination_sum_MI, ress_rumination_mean_MI, ress_engagement_mean, ress_engagement_sum, ress_engagement_mean_MI, ress_engagement_sum_MI, ress_reappraisal_mean, ress_reappraisal_sum, ress_reappraisal_mean_MI, ress_reappraisal_sum_MI, ress_suppression_mean, ress_suppression_sum, ress_suppression_mean_MI, ress_suppression_sum_MI, ress_relaxation_sum, ress_relaxation_mean, ress_relaxation_sum_MI, ress_relaxation_mean_MI, ress_distraction_mean, ress_distraction_sum))
+
+#Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+
+# Count the number of non-missing items per participant
+num_items <- ncol(df_scale.na_rlx)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
+for(i in 1:nrow(df_scale.na_rlx)) {
+  non_missing_count <- sum(!is.na(df_scale.na_rlx[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    df_scale.na_rlx[i, ][is.na(df_scale.na_rlx[i, ])] <- mean(as.numeric(df_scale.na_rlx[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    df_scale.na_rlx[i, ] <- NA
+  }
+}
+
+#Round the values back to whole numbers:
+df_scale.na_rlx <- round(df_scale.na_rlx, digits=0)
+
+#Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
+df_scale.na_rlx$ress_relaxation_sum_MI <- apply(df_scale.na_rlx[,paste0(c("ress_6", "ress_16", "ress_19", "ress_24"))], 1, sum)
+df_scale.na_rlx$ress_relaxation_mean_MI <- apply(df_scale.na_rlx[,paste0(c("ress_6", "ress_16", "ress_19", "ress_24"))], 1, mean)
+
+#Put the IDs back into the data frame:
+df_scale.na_rlx$id <- id.list
+
+#Put the MI columns back into the original data frame
+df_scale$ress_relaxation_mean_MI <- df_scale.na_rlx$ress_relaxation_mean_MI
+df_scale$ress_relaxation_sum_MI  <- df_scale.na_rlx$ress_relaxation_sum_MI
 ```
 
 Save the data file:
