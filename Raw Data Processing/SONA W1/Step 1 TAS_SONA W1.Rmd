@@ -227,7 +227,55 @@ tas_scale$tas_sum_MI  <- tas_scale.na$tas_sum_MI
 ```
 
 
-```
+Now, do MI for subscale mean and sum scores.
+
+Reappraisal (MI)
+```{r}
+
+#MI
+# Impute missing values for participants who responded to at least 50% of the sub-scale items (2 items).
+# ress_3 + ress_12 + ress_15 + ress_23
+
+# First, pull out columns we do not want used in the mean imputation:
+# Pull out the id column:
+df_scale.na_reap <- df_scale
+id.list <- df_scale.na_reap$id
+#Remove columns we don't want to include in the mean imputation:
+df_scale.na_reap <- subset(df_scale.na_reap, select = -c(id, ress_1, ress_2, ress_4:ress_11, ress_13, ress_14, ress_16:ress_22, ress_24, ress_rumination_sum, ress_rumination_mean, ress_rumination_sum_MI, ress_rumination_mean_MI, ress_engagement_mean, ress_engagement_sum, ress_engagement_mean_MI, ress_engagement_sum_MI, ress_reappraisal_mean, ress_reappraisal_sum))
+
+#Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+
+# Count the number of non-missing items per participant
+num_items <- ncol(df_scale.na_reap)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
+for(i in 1:nrow(df_scale.na_reap)) {
+  non_missing_count <- sum(!is.na(df_scale.na_reap[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    df_scale.na_reap[i, ][is.na(df_scale.na_reap[i, ])] <- mean(as.numeric(df_scale.na_reap[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    df_scale.na_reap[i, ] <- NA
+  }
+}
+
+#Round the values back to whole numbers:
+df_scale.na_reap <- round(df_scale.na_reap, digits=0)
+
+#Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
+df_scale.na_reap$ress_reappraisal_sum_MI <- apply(df_scale.na_reap[,paste0(c("ress_3", "ress_12", "ress_15", "ress_23"))], 1, sum)
+df_scale.na_reap$ress_reappraisal_mean_MI <- apply(df_scale.na_reap[,paste0(c("ress_3", "ress_12", "ress_15", "ress_23"))], 1, mean)
+
+#Put the IDs back into the data frame:
+df_scale.na_reap$id <- id.list
+
+#Put the MI columns back into the original data frame
+df_scale$ress_reappraisal_mean_MI <- df_scale.na_reap$ress_reappraisal_mean_MI
+df_scale$ress_reappraisal_sum_MI  <- df_scale.na_reap$ress_reappraisal_sum_MI
+
 
 
 ```{r}
