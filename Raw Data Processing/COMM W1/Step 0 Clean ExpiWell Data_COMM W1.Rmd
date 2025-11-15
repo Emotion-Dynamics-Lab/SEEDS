@@ -84,6 +84,22 @@ cols_remove <- c("X.8", "X.9", "X.10", "X.11")
 df <- df[, !(colnames(df) %in% cols_remove)]
 ```
 
+Check for duplicate submissions:
+```{r}
+# List which participant IDs have duplicate submissions
+duplicated_ids <- unique(df$X.7[duplicated(df$X.7)])
+duplicated_ids
+
+# IDs "680848ab08fd72522062a81d" and "6804954a3df92472ed313090" have two submissions.
+# For ID 680848ab08fd72522062a81d, we decided to keep the second submission as this entry included additional information.
+df = filter(df, !(X.7 %in% "680848ab08fd72522062a81d" & X.3 %in% "18641.374"))
+
+#For ID 6804954a3df92472ed313090, it did not matter which submission we kept as both of them had the same information, the only difference was completion time which was off by a couple of seconds (likely a similar glitch to the one we experienced for SONA W1).
+df = filter(df, !(X.7 %in% "6804954a3df92472ed313090" & X.3 %in% "259.582"))
+
+
+```
+
 ## Save the data file
 
 Save the data file. This is the file to read in to all COMM W1 ExpiWell variable preparation scripts.
