@@ -1,7 +1,7 @@
 ---
 title: "COMM W1 Demographics"
 author: "Hayleigh Armstrong"
-date: "11/02/2025"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     number_sections: yes

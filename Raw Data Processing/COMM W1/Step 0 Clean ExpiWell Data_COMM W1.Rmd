@@ -1,7 +1,7 @@
 ---
 title: "Step 0 Clean ExpiWell Data - Community W1"
 author: "Hayleigh Armstrong & Jess Lougheed"
-date: "11/02/2025"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     number_sections: yes
