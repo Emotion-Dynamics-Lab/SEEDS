@@ -1,7 +1,7 @@
 ---
 title: "Step 1 PERMA Profiler_SONA W1"
 author: "Hayleigh"
-date: "2025-16-10"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     number_sections: yes
