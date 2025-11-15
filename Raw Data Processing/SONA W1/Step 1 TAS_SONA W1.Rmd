@@ -229,19 +229,20 @@ tas_scale$tas_sum_MI  <- tas_scale.na$tas_sum_MI
 
 Now, do MI for subscale mean and sum scores.
 
-Reappraisal (MI)
+Difficulty identifying feelings (DIF) (MI)
 ```{r}
 
 #MI
-# Impute missing values for participants who responded to at least 50% of the sub-scale items (2 items).
-# ress_3 + ress_12 + ress_15 + ress_23
+# Impute missing values for participants who responded to at least 50% of the sub-scale items (4 items).
+# Items 1, 3, 6, 7, 9, 13, 14
 
 # First, pull out columns we do not want used in the mean imputation:
 # Pull out the id column:
-df_scale.na_reap <- df_scale
-id.list <- df_scale.na_reap$id
+tas_scale.na_dif <- tas_scale
+id.list <- tas_scale.na_dif$id
+
 #Remove columns we don't want to include in the mean imputation:
-df_scale.na_reap <- subset(df_scale.na_reap, select = -c(id, ress_1, ress_2, ress_4:ress_11, ress_13, ress_14, ress_16:ress_22, ress_24, ress_rumination_sum, ress_rumination_mean, ress_rumination_sum_MI, ress_rumination_mean_MI, ress_engagement_mean, ress_engagement_sum, ress_engagement_mean_MI, ress_engagement_sum_MI, ress_reappraisal_mean, ress_reappraisal_sum))
+tas_scale.na_dif <- subset(tas_scale.na_dif, select = -c(id, tas_2, tas_4, tas_5, tas_8, tas_10:tas_12, tas_15:tas_20, tas_sum, tas_mean, tas_mean_MI, tas_sum_MI, tas_diff_id_mean, tas_diff_id_sum, tas_diff_describ_mean, tas_diff_describ_sum, tas_ext_think_mean, tas_ext_think_sum))
 
 #Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
 
