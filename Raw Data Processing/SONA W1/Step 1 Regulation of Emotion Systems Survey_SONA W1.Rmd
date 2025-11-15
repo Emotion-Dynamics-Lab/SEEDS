@@ -301,7 +301,7 @@ df_scale$ress_reappraisal_sum_MI  <- df_scale.na_reap$ress_reappraisal_sum_MI
 
 ```
 
-Suppression:
+Suppression (non-MI):
 ```{r}
 df_scale <- mutate(df_scale, ress_suppression_sum  = ress_4 + ress_9 + ress_13 + ress_18)
 
@@ -309,6 +309,54 @@ df_scale$ress_suppression_mean <- apply(df_scale[, c("ress_4", "ress_9", "ress_1
 
 label(df_scale[["ress_suppression_sum"]]) <- "sum of ress suppression items"
 label(df_scale[["ress_suppression_mean"]]) <- "mean of ress suppression items"
+
+```
+
+Suppression (MI):
+```{r}
+#MI
+# Impute missing values for participants who responded to at least 50% of the sub-scale items (2 items).
+# ress_4 + ress_9 + ress_13 + ress_18
+
+# First, pull out columns we do not want used in the mean imputation:
+# Pull out the id column:
+df_scale.na_supp <- df_scale
+id.list <- df_scale.na_supp$id
+#Remove columns we don't want to include in the mean imputation:
+df_scale.na_supp <- subset(df_scale.na_supp, select = -c(id, ress_1:ress_3, ress_5:ress_8, ress_10:ress_12, ress_14:ress_17, ress_19:ress_24, ress_rumination_sum, ress_rumination_mean, ress_rumination_sum_MI, ress_rumination_mean_MI, ress_engagement_mean, ress_engagement_sum, ress_engagement_mean_MI, ress_engagement_sum_MI, ress_reappraisal_mean, ress_reappraisal_sum, ress_reappraisal_mean_MI, ress_reappraisal_sum_MI, ress_suppression_mean, ress_suppression_sum))
+
+#Impute the means, using the approach for imputing row means described [here](https://statisticsglobe.com/mean-imputation-for-missing-data/):
+
+# Count the number of non-missing items per participant
+num_items <- ncol(df_scale.na_supp)
+min_items_needed <- ceiling(num_items * 0.5)  # at least 50% answered
+
+# Impute row means only for participants who answered >= 50% of items
+for(i in 1:nrow(df_scale.na_supp)) {
+  non_missing_count <- sum(!is.na(df_scale.na_supp[i, ]))
+  
+if(non_missing_count >= min_items_needed) {
+    # Impute missing values with row mean
+    df_scale.na_supp[i, ][is.na(df_scale.na_supp[i, ])] <- mean(as.numeric(df_scale.na_supp[i, ]), na.rm = TRUE)
+  } else {
+    # If less than 50% answered, set all values to NA
+    df_scale.na_supp[i, ] <- NA
+  }
+}
+
+#Round the values back to whole numbers:
+df_scale.na_supp <- round(df_scale.na_supp, digits=0)
+
+#Calculate the sum and mean, using the suffix _MI to indicate that these columns have had means imputed:
+df_scale.na_supp$ress_suppression_sum_MI <- apply(df_scale.na_supp[,paste0(c("ress_4", "ress_9", "ress_13", "ress_18"))], 1, sum)
+df_scale.na_supp$ress_suppression_mean_MI <- apply(df_scale.na_supp[,paste0(c("ress_4", "ress_9", "ress_13", "ress_18"))], 1, mean)
+
+#Put the IDs back into the data frame:
+df_scale.na_supp$id <- id.list
+
+#Put the MI columns back into the original data frame
+df_scale$ress_suppression_mean_MI <- df_scale.na_supp$ress_suppression_mean_MI
+df_scale$ress_suppression_sum_MI  <- df_scale.na_supp$ress_suppression_sum_MI
 
 ```
 
